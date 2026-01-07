@@ -6,7 +6,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
     />
-    <title>马原智能复习系统 (GitHub版)</title>
+    <title>马原期末复习冲刺系统</title>
     <style>
       :root {
         --primary: #4f46e5;
@@ -62,6 +62,7 @@
         font-weight: 800;
         color: var(--primary);
         text-align: center;
+        letter-spacing: 1px;
       }
 
       /* 功能按钮区 */
@@ -74,9 +75,9 @@
       .func-btn {
         flex: 1;
         border: none;
-        padding: 8px;
-        border-radius: 6px;
-        font-size: 0.85rem;
+        padding: 10px;
+        border-radius: 8px;
+        font-size: 0.9rem;
         font-weight: 600;
         cursor: pointer;
         transition: 0.2s;
@@ -84,6 +85,7 @@
         align-items: center;
         justify-content: center;
         gap: 4px;
+        white-space: nowrap;
       }
       
       .btn-normal { background: #f1f5f9; color: #475569; }
@@ -112,6 +114,7 @@
         color: #475569;
         transition: 0.2s;
         border: 1px solid transparent;
+        font-size: 0.95rem;
       }
       .chapter-item:hover { background: var(--primary-light); }
       .chapter-item.active {
@@ -122,7 +125,7 @@
       }
 
       .badge-pill {
-        font-size: 0.7rem;
+        font-size: 0.75rem;
         padding: 2px 8px;
         border-radius: 10px;
         background: #e2e8f0;
@@ -178,30 +181,31 @@
       }
 
       .jump-box {
-        padding: 4px 8px;
+        padding: 6px 8px;
         border: 1px solid #cbd5e1;
         border-radius: 6px;
-        font-size: 0.85rem;
+        font-size: 0.9rem;
         color: #475569;
         outline: none;
         background: white;
-        max-width: 90px;
+        max-width: 100px;
+        font-weight: 600;
       }
 
-      /* === 右上角分数板 === */
+      /* === 分数板 === */
       .score-board {
         display: flex;
-        gap: 8px;
+        gap: 10px;
         margin-left: 10px;
         background: #f8fafc;
-        padding: 4px 8px;
+        padding: 5px 10px;
         border-radius: 8px;
         border: 1px solid #e2e8f0;
       }
       .score-item {
         display: flex;
         align-items: center;
-        gap: 3px;
+        gap: 4px;
         font-size: 0.85rem;
         font-weight: 600;
       }
@@ -216,7 +220,7 @@
         overflow-x: auto;
         padding-bottom: 2px;
         scrollbar-width: none;
-        margin-top: 10px;
+        margin-top: 5px;
       }
       .filter-scroll::-webkit-scrollbar { display: none; }
 
@@ -242,12 +246,30 @@
         box-shadow: 0 2px 4px rgba(79, 70, 229, 0.2);
       }
 
+      /* 进度条 */
+      .progress-container {
+        height: 4px;
+        background: #e2e8f0;
+        width: 100%;
+        margin-top: 5px;
+        border-radius: 2px;
+        overflow: hidden;
+      }
+      .progress-bar {
+        height: 100%;
+        background: var(--primary);
+        width: 0%;
+        transition: width 0.3s ease;
+      }
+
       .content-area {
         flex: 1;
         overflow-y: auto;
         padding: 20px;
         display: flex;
         justify-content: center;
+        /* 增加底部留白，防遮挡 */
+        padding-bottom: 80px; 
       }
 
       .card {
@@ -273,7 +295,7 @@
 
       .q-type {
         font-size: 0.75rem;
-        padding: 3px 8px;
+        padding: 4px 10px;
         border-radius: 6px;
         font-weight: 700;
         background: #f1f5f9;
@@ -283,11 +305,12 @@
       .q-type.multi { background: #fef3c7; color: #d97706; }
 
       .q-content {
-        font-size: 1.15rem;
-        line-height: 1.7;
+        font-size: 1.2rem;
+        line-height: 1.6;
         color: #1e293b;
         margin-bottom: 25px;
         white-space: pre-wrap;
+        font-weight: 500;
       }
 
       /* 选项样式 */
@@ -299,7 +322,7 @@
 
       .opt-row {
         display: flex;
-        padding: 15px;
+        padding: 16px;
         border: 2px solid #f1f5f9;
         border-radius: 12px;
         cursor: pointer;
@@ -314,8 +337,8 @@
       .opt-row.missed { border-color: var(--warning); background: #fffbeb; border-style: dashed; }
 
       .opt-icon {
-        width: 24px;
-        height: 24px;
+        width: 26px;
+        height: 26px;
         margin-right: 12px;
         border: 2px solid #cbd5e1;
         display: flex;
@@ -326,16 +349,18 @@
         flex-shrink: 0;
         font-size: 14px;
         font-weight: bold;
+        background: white;
+        color: #cbd5e1;
       }
       .opt-row.single-mode .opt-icon { border-radius: 50%; }
       .opt-row.multi-mode .opt-icon { border-radius: 6px; }
 
-      .opt-row.selected .opt-icon { background: var(--primary); border-color: var(--primary); }
-      .opt-row.correct .opt-icon { background: var(--success); border-color: var(--success); }
-      .opt-row.wrong .opt-icon { background: var(--error); border-color: var(--error); }
-      .opt-row.missed .opt-icon { background: var(--warning); border-color: var(--warning); }
+      .opt-row.selected .opt-icon { background: var(--primary); border-color: var(--primary); color: white; }
+      .opt-row.correct .opt-icon { background: var(--success); border-color: var(--success); color: white; }
+      .opt-row.wrong .opt-icon { background: var(--error); border-color: var(--error); color: white; }
+      .opt-row.missed .opt-icon { background: var(--warning); border-color: var(--warning); color: white; }
 
-      .opt-text { flex: 1; font-size: 1rem; }
+      .opt-text { flex: 1; font-size: 1.05rem; line-height: 1.5; }
 
       .answer-section {
         margin-top: 25px;
@@ -367,13 +392,17 @@
         display: flex;
         gap: 15px;
         align-items: center;
+        position: fixed;
+        bottom: 0;
+        width: calc(100% - var(--sidebar-width));
+        z-index: 40;
       }
 
       .btn {
         flex: 1;
-        padding: 12px;
+        padding: 14px;
         border: none;
-        border-radius: 10px;
+        border-radius: 12px;
         font-weight: 600;
         font-size: 1rem;
         cursor: pointer;
@@ -414,7 +443,9 @@
         .menu-toggle { display: block; }
         .overlay.active { display: block; }
         .score-board { margin-left: 5px; padding: 2px 5px; }
-        .nav-title { display: none; } /* 手机端隐藏标题以给分数板腾空间 */
+        .nav-title { display: none; } 
+        .action-bar { width: 100%; }
+        .content-area { padding: 15px; padding-bottom: 90px; }
       }
       @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -432,7 +463,7 @@
         </div>
         <div class="func-btns">
             <button class="func-btn btn-wrong" onclick="switchModule('wrong_book')" id="btn-wrong">
-                ❌ 错题集
+                ❌ 错题集 <span id="wrongCount" style="margin-left:4px; opacity:0.8; font-size:0.8em"></span>
             </button>
             <button class="func-btn btn-random" onclick="switchModule('random_drill')" id="btn-random">
                 🔀 乱序刷
@@ -443,19 +474,21 @@
       <div class="chapter-list" id="chapterList"></div>
       
       <div style="padding: 15px; border-top: 1px solid #f1f5f9; display:flex; flex-direction:column; gap:10px;">
-        <!-- 新增清空错题功能 -->
         <button
-          onclick="clearWrongBook()"
-          style="width:100%; color: #dc2626; background: #fee2e2; border: 1px solid #fca5a5; padding: 8px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight:600;"
+          onclick="resetWrongBook()"
+          style="width:100%; color: #dc2626; background: #fee2e2; border: 1px solid #fca5a5; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight:600;"
         >
-          🔥 清空所有错题
+          🔥 重置所有错题
         </button>
         <button
           onclick="resetChapter()"
-          style="width:100%; color: #ef4444; background: white; border: 1px solid #fee2e2; padding: 8px; border-radius: 8px; cursor: pointer; font-size: 0.85rem;"
+          style="width:100%; color: #ef4444; background: white; border: 1px solid #fee2e2; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 0.85rem;"
         >
-          🗑️ 清空当前章节进度
+          🗑️ 清空本章进度
         </button>
+        <div style="font-size:0.75rem; color:#94a3b8; text-align:center;">
+            按 ← → 键快速翻页
+        </div>
       </div>
     </div>
     <div class="overlay" id="overlay" onclick="closeAll()"></div>
@@ -470,7 +503,6 @@
           </div>
           
           <div style="display:flex; align-items:center;">
-              <!-- 分数板 -->
               <div class="score-board">
                   <span class="score-item score-correct">✅ <span id="s-correct">0</span></span>
                   <span class="score-item score-wrong">❌ <span id="s-wrong">0</span></span>
@@ -493,6 +525,11 @@
           <button class="filter-chip" onclick="setFilter('多选')">
             🔵 多选题
           </button>
+        </div>
+        
+        <!-- 进度条 -->
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
         </div>
       </div>
 
@@ -533,19 +570,22 @@
       let userSel = new Set(); 
       let wrongSet = new Set();
 
-      // === 初始化：自动读取MD文件 ===
+      // === 初始化 ===
       window.onload = async function() {
         const savedWrongs = localStorage.getItem("wrong_questions");
         if (savedWrongs) wrongSet = new Set(JSON.parse(savedWrongs));
 
-        // 尝试直接Fetch读取（GitHub Pages 支持）
         try {
+            // GitHub Pages 自动读取
             const response = await fetch('./提取结果_带答案.md');
             if(response.ok) {
                 const text = await response.text();
                 const questions = parseMarkdown(text);
                 if(questions.length > 0) {
                     modules.main.data = questions;
+                    // 核心：启动时全量同步错题状态
+                    syncGlobalWrongStatus();
+                    
                     switchModule('main');
                     const lastChap = localStorage.getItem("last_chapter");
                     if (lastChap) loadChapter(lastChap);
@@ -557,23 +597,142 @@
             }
         } catch(e) {
             console.error("自动读取失败:", e);
-            // 如果自动读取失败，检查是否有缓存
+            // 本地测试时的回退
             const cached = localStorage.getItem("cached_questions");
             if (cached) {
-                const data = JSON.parse(cached);
-                modules.main.data = data;
+                modules.main.data = JSON.parse(cached);
+                syncGlobalWrongStatus();
                 switchModule('main');
             } else {
                 document.getElementById("qContainer").innerHTML = 
                 `<div style="text-align:center; margin-top:50px; padding:20px;">
                    <h3 style="color:#ef4444">⚠️ 读取题库失败</h3>
                    <p style="color:#64748b; font-size:0.9rem;">
-                   请确保 <strong>提取结果_带答案.md</strong> 文件与本网页在同一目录。<br>
-                   如果在本地运行，请使用 <code>python -m http.server</code>。
+                   如果是本地运行，请使用 <code>python -m http.server</code>。<br>
+                   如果是GitHub，请检查文件名是否为 <code>提取结果_带答案.md</code>
                    </p>
                 </div>`;
             }
         }
+        
+        // 键盘监听
+        document.addEventListener('keydown', (e) => {
+            if(e.key === 'ArrowLeft') move(-1);
+            if(e.key === 'ArrowRight') move(1);
+            if(e.key === 'Enter') handleMainAction();
+        });
+        
+        // 触摸滑动监听
+        let touchStartX = 0;
+        const content = document.getElementById('qContainer');
+        content.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX);
+        content.addEventListener('touchend', e => {
+            const diff = e.changedTouches[0].screenX - touchStartX;
+            if(Math.abs(diff) > 50) move(diff > 0 ? -1 : 1);
+        });
+      };
+
+      // === 核心功能：全量同步错题状态 ===
+      // 遍历所有章节的存档，只要发现错题，就确保它在错题本里
+      function syncGlobalWrongStatus() {
+          // 1. 建立题目ID到题目的映射，并按章节分组
+          const chapterMap = new Map();
+          const idMap = new Map();
+          
+          modules.main.data.forEach(q => {
+              if(!chapterMap.has(q.chapter)) chapterMap.set(q.chapter, []);
+              chapterMap.get(q.chapter).push(q);
+              idMap.set(q._uid, q);
+          });
+
+          // 2. 遍历所有章节的 localStorage
+          for (const [chapName, questions] of chapterMap) {
+              const key = modules.main.prefix + chapName;
+              const savedJson = localStorage.getItem(key);
+              if(savedJson) {
+                  const savedState = JSON.parse(savedJson);
+                  // 遍历该章节所有题目状态
+                  savedState.forEach((state, idx) => {
+                      // 确保索引有效且题目存在
+                      if(state && state.done && questions[idx]) {
+                          const q = questions[idx];
+                          // 临时恢复状态进行判分
+                          const tempQ = { ...q, userSel: new Set(state.sel), isSubmitted: true };
+                          const status = getQuestionStatus(tempQ);
+                          
+                          if(status === 'wrong' || status === 'partial') {
+                              wrongSet.add(q._uid);
+                          }
+                      }
+                  });
+              }
+          }
+          
+          // 3. 保存并更新UI
+          localStorage.setItem("wrong_questions", JSON.stringify(Array.from(wrongSet)));
+          updateWrongBookCount();
+      }
+
+      function updateWrongBookCount() {
+          const count = wrongSet.size;
+          const el = document.getElementById("wrongCount");
+          if(el) el.innerText = count > 0 ? `(${count})` : "";
+      }
+
+      // === 彻底重置错题逻辑 ===
+      window.resetWrongBook = function() {
+          if(!confirm("⚠️ 确定要重置所有错题吗？\n\n这将会把这些题在章节练习中的状态也重置为【未做】，方便您重新练习。")) return;
+          
+          // 1. 找出所有错题
+          const wrongIds = new Set(wrongSet);
+          
+          // 2. 遍历所有章节，重置这些题目的状态
+          const chapterMap = new Map();
+          modules.main.data.forEach(q => {
+              if(!chapterMap.has(q.chapter)) chapterMap.set(q.chapter, []);
+              chapterMap.get(q.chapter).push(q);
+          });
+
+          for (const [chapName, questions] of chapterMap) {
+              const key = modules.main.prefix + chapName;
+              const savedJson = localStorage.getItem(key);
+              if(savedJson) {
+                  let savedState = JSON.parse(savedJson);
+                  let changed = false;
+                  
+                  questions.forEach((q, idx) => {
+                      if(wrongIds.has(q._uid) && savedState[idx]) {
+                          // 重置该题状态
+                          savedState[idx] = { sel: [], done: false };
+                          changed = true;
+                          
+                          // 如果当前正在看这一章，实时更新rawList
+                          if(curChapter === chapName) {
+                              rawList[idx].userSel = new Set();
+                              rawList[idx].isSubmitted = false;
+                          }
+                      }
+                  });
+                  
+                  if(changed) {
+                      localStorage.setItem(key, JSON.stringify(savedState));
+                  }
+              }
+          }
+
+          // 3. 清空错题本
+          wrongSet.clear();
+          localStorage.removeItem("wrong_questions");
+          updateWrongBookCount();
+          
+          // 4. 刷新界面
+          if(curMod === 'wrong_book') {
+              loadWrongBook();
+          } else {
+              setFilter(filterType); // 刷新下拉框和界面
+              renderQ();
+          }
+          alert("重置完成！你可以重新开始攻克这些题了。");
       };
 
       // === Markdown 解析 ===
@@ -592,6 +751,7 @@
                    if (!tempQ.answer) tempQ.answer = inlineAns[2].toUpperCase().trim();
                    tempQ.content = tempQ.content.replace(bracketRegex, "（ ）");
                }
+               // 智能题型修正
                if (tempQ.answer && tempQ.answer.length > 1) {
                    tempQ.type = "多选题";
                } else if (tempQ.answer && tempQ.answer.length === 1 && currentType === "单选题") {
@@ -599,6 +759,7 @@
                } else if (!tempQ.type) {
                    tempQ.type = currentType;
                }
+               // 生成唯一ID
                const str = tempQ.chapter + tempQ.content.substring(0, 15);
                let hash = 0;
                for (let i = 0; i < str.length; i++) hash = (hash << 5) - hash + str.charCodeAt(i);
@@ -657,7 +818,6 @@
         return questions;
       }
 
-      // === 模块切换 ===
       function switchModule(key) {
         curMod = key;
         document.getElementById('btn-main').className = `func-btn btn-normal ${key==='main'?'active':''}`;
@@ -695,7 +855,7 @@
         setFilter('all');
         document.getElementById("chapterList").innerHTML = `<div style="padding:20px; color:#64748b; text-align:center">共 <strong>${rawList.length}</strong> 道错题</div>`;
         if(rawList.length > 0) { curIndex = 0; renderQ(); }
-        else document.getElementById("qContainer").innerHTML = `<div style="text-align:center; margin-top:100px; color:#10b981;">暂无错题，继续保持！</div>`;
+        else document.getElementById("qContainer").innerHTML = `<div style="text-align:center; margin-top:100px; color:#10b981;">🎉 暂无错题，继续保持！</div>`;
       }
 
       function loadRandomDrill() {
@@ -713,19 +873,6 @@
         curIndex = 0;
         renderQ();
       }
-
-      // === 清空错题本 ===
-      window.clearWrongBook = function() {
-          if(!confirm("⚠️ 确定要清空所有错题记录吗？\n此操作不可恢复！")) return;
-          wrongSet.clear();
-          localStorage.removeItem("wrong_questions");
-          alert("错题本已清空！");
-          if(curMod === 'wrong_book') loadWrongBook();
-          else if(curMod === 'main') {
-              // 刷新当前界面以移除错题标记（如果需要）
-              // 暂时不需要强制刷新整个列表，因为错题本逻辑是独立的
-          }
-      };
 
       function initSidebar() {
         const list = document.getElementById("chapterList");
@@ -755,6 +902,7 @@
         curChapter = cName;
         localStorage.setItem("last_chapter", cName);
         rawList = allData.filter(q => q.chapter === cName);
+        
         const key = modules.main.prefix + cName;
         const saved = JSON.parse(localStorage.getItem(key) || "[]");
         rawList.forEach((q, i) => {
@@ -766,8 +914,10 @@
             q.isSubmitted = false;
           }
         });
+        
         initSidebar();
-        setFilter(filterType);
+        setFilter(filterType); 
+        
         if (window.innerWidth <= 768) {
              document.getElementById("sidebar").classList.remove("open");
              document.getElementById("overlay").classList.remove("active");
@@ -793,6 +943,7 @@
         }
 
         sel.disabled = false;
+        // 关键修复：确保加载时显示正确图标
         filteredList.forEach((q, i) => {
           let mark = "";
           if(q.isSubmitted) {
@@ -804,12 +955,12 @@
           sel.add(new Option(`${i + 1}. ${q.content.substring(0,8)}...${mark}`, i));
         });
 
+        // 自动跳转到第一个未做题目
         let next = filteredList.findIndex(q => !q.isSubmitted);
         curIndex = next === -1 ? 0 : next;
         renderQ();
       }
 
-      // === 更新右上角分数板 ===
       function updateScoreBoard() {
           let c = 0, w = 0, p = 0;
           if (filteredList && filteredList.length > 0) {
@@ -834,8 +985,11 @@
         document.getElementById("qJumper").value = curIndex;
         userSel = new Set(q.userSel);
         
-        // 每次渲染都更新分数板
         updateScoreBoard();
+        
+        // 更新进度条
+        const progress = Math.round(((curIndex + 1) / filteredList.length) * 100);
+        document.getElementById('progressBar').style.width = `${progress}%`;
 
         const container = document.getElementById("qContainer");
         let cardClass = "card";
@@ -904,8 +1058,6 @@
                    <span style="font-weight:bold; color:#1e293b">参考答案：</span>
                    <span style="color:var(--primary); font-weight:bold; font-size:1.1rem">${q.answer || "略"}</span>
                 </div>
-                ${curMod === 'wrong_book' ? 
-                `<button class="btn btn-secondary" style="margin-top:10px; font-size:0.8rem" onclick="removeFromWrongBook('${q._uid}')">🗑️ 移出错题本</button>` : ''}
              </div>
           </div>
         `;
@@ -950,10 +1102,12 @@
         } else {
           q.isSubmitted = true;
           const status = getQuestionStatus(q);
+          
           if (status === 'wrong' || status === 'partial') {
               if (!wrongSet.has(q._uid)) {
                   wrongSet.add(q._uid);
                   localStorage.setItem("wrong_questions", JSON.stringify(Array.from(wrongSet)));
+                  updateWrongBookCount();
               }
           }
           if(curMod === 'main') {
@@ -961,7 +1115,17 @@
               localStorage.setItem(modules.main.prefix + curChapter, JSON.stringify(state));
               initSidebar();
           }
-          renderQ();
+          
+          renderQ(); 
+
+          const sel = document.getElementById("qJumper");
+          if(sel && sel.options[curIndex]) {
+              let mark = "";
+              if (status === 'correct') mark = " ✅";
+              else if (status === 'partial') mark = " 🌗";
+              else mark = " ❌";
+              sel.options[curIndex].text = `${curIndex + 1}. ${q.content.substring(0,8)}...${mark}`;
+          }
         }
       };
 
@@ -992,12 +1156,7 @@
               initSidebar();
           }
           renderQ();
-      };
-      
-      window.removeFromWrongBook = function(uid) {
-          wrongSet.delete(uid);
-          localStorage.setItem("wrong_questions", JSON.stringify(Array.from(wrongSet)));
-          loadWrongBook();
+          setFilter(filterType); 
       };
 
       window.toggleSidebar = function () {
