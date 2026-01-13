@@ -6,7 +6,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
     />
-    <title>马原期末复习 - 决战版 V31.0</title>
+    <title>马原期末复习 - 决战版 V33.0 (极速刷题+干扰消除)</title>
     <style>
       :root {
         --primary: #4f46e5;
@@ -53,8 +53,9 @@
       .search-input { width: 100%; padding: 8px 10px 8px 30px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-body); color: var(--text-main); font-size: 0.85rem; }
       .search-icon { position: absolute; left: 8px; top: 50%; transform: translateY(-50%); font-size: 0.9rem; opacity: 0.5; }
 
-      .countdown-card { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; padding: 10px; border-radius: 8px; text-align: center; cursor: pointer; box-shadow: 0 4px 6px rgba(99, 102, 241, 0.25); }
+      .countdown-card { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; padding: 10px; border-radius: 8px; text-align: center; cursor: pointer; box-shadow: 0 4px 6px rgba(239, 68, 68, 0.25); animation: pulse 2s infinite; }
       .countdown-num { font-size: 1.4rem; font-weight: 800; margin: 0 4px; text-decoration: underline; text-underline-offset: 3px; }
+      @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
 
       .func-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
       .func-btn { border: 1px solid var(--border-color); padding: 8px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 4px; white-space: nowrap; background: var(--bg-card); color: var(--text-sub); }
@@ -65,9 +66,6 @@
       .btn-wrong.active { background: var(--error); border-color: var(--error); color: white; }
       .btn-fav.active { background: var(--warning); border-color: var(--warning); color: white; }
       
-      /* 新增：斩杀（熟练）统计样式 */
-      .kill-stat { font-size: 0.75rem; color: #10b981; background: rgba(16, 185, 129, 0.1); padding: 2px 6px; border-radius: 4px; margin-left: 5px; }
-
       .chapter-list { flex: 1; overflow-y: auto; padding: 8px; }
       .chapter-item { padding: 10px 12px; margin-bottom: 4px; border-radius: 6px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; color: var(--text-sub); transition: 0.2s; border: 1px solid transparent; font-size: 0.85rem; }
       .chapter-item:hover { background: var(--bg-body); }
@@ -75,6 +73,7 @@
       .badge-pill { font-size: 0.75rem; padding: 1px 6px; border-radius: 4px; background: var(--border-color); color: var(--text-sub); }
       .chapter-item.active .badge-pill { background: var(--bg-card); color: var(--primary); }
       .chapter-item .badge-pill.completed { background: var(--success); color: white; }
+      .chapter-item .badge-pill.low-score { background: var(--error); color: white; }
 
       .sidebar-footer { padding: 12px; border-top: 1px solid var(--border-color); background: var(--bg-sidebar); display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
       .tool-btn { background: var(--bg-body); border: 1px solid var(--border-color); color: var(--text-sub); padding: 6px; border-radius: 4px; font-size: 0.75rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; justify-content: center; }
@@ -94,25 +93,26 @@
       
       .jump-unfinished-btn { background: var(--success); color: white; border: none; padding: 5px 8px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; gap: 4px; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2); }
       .jump-unfinished-btn:active { transform: scale(0.95); }
-      /* 背诵模式下的跳转按钮样式 */
       .jump-unfinished-btn.recite-jump { background: var(--info); box-shadow: 0 2px 4px rgba(14, 165, 233, 0.2); }
 
       .filter-scroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
       .filter-chip { padding: 4px 10px; border-radius: 20px; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-sub); font-size: 0.8rem; white-space: nowrap; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: 0.2s; }
       .filter-chip.active { background: var(--primary); color: white; border-color: var(--primary); }
       .filter-chip.active-wrong { background: var(--error); color: white; border-color: var(--error); }
-      /* 新增：背诵模式下的过滤按钮 */
       .filter-chip.active-recite { background: var(--info); color: white; border-color: var(--info); }
       .filter-chip.active-kill { background: #10b981; color: white; border-color: #10b981; }
+      
+      /* 新增功能按钮 */
+      .filter-chip.active-speed { background: #8b5cf6; color: white; border-color: #8b5cf6; }
+      .filter-chip.active-clean { background: #6366f1; color: white; border-color: #6366f1; }
 
       .progress-container { height: 4px; background: var(--border-color); width: 100%; border-radius: 2px; overflow: hidden; position: relative; }
       .progress-bar { height: 100%; background: var(--success); width: 0%; transition: width 0.3s ease; }
-      /* 背诵模式进度条颜色 */
       .progress-bar.recite-bar { background: var(--info); }
 
       .content-area { flex: 1; overflow-y: auto; padding: 20px; display: flex; justify-content: center; padding-bottom: 80px; }
       
-      /* === 增强版 Card 样式 === */
+      /* Card 样式 */
       .card { background: var(--bg-card); border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); padding: 20px; width: 100%; max-width: 800px; height: fit-content; margin-bottom: 20px; position: relative; border: 1px solid var(--border-color); transition: border-color 0.3s; }
 
       .card.recite-mode { border-left: 5px solid var(--info); overflow: visible; }
@@ -120,8 +120,8 @@
       .card.fav-mode { border-left: 5px solid var(--warning); }
       .card.mock-mode { border-left: 5px solid #8b5cf6; }
       .card.search-mode { border-left: 5px solid #ec4899; }
+      .card.speed-mode { border-left: 5px solid #8b5cf6; } /* 极速模式样式 */
       
-      /* 新增：已斩（Mastered）状态样式 */
       .card.mastered-card { opacity: 0.7; border-style: dashed; }
       .mastered-badge { position: absolute; top: 10px; right: 50px; background: #10b981; color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; transform: rotate(10deg); box-shadow: 0 2px 5px rgba(0,0,0,0.1); border: 2px solid white; z-index: 20; }
 
@@ -139,7 +139,9 @@
 
       .q-content { font-size: var(--content-font-size); line-height: 1.6; color: var(--text-main); margin-bottom: 20px; white-space: pre-wrap; font-weight: 500; transition: font-size 0.2s; }
       
-      /* 背书模式悬浮题干 */
+      /* 关键词高亮 */
+      .highlight-keyword { color: #ef4444; font-weight: 900; background: rgba(239, 68, 68, 0.1); padding: 0 2px; border-radius: 2px; }
+      
       .card.recite-mode .q-content { position: sticky; top: -20px; z-index: 10; background: var(--bg-card); padding: 15px 0; border-bottom: 3px solid var(--primary-light); margin-bottom: 20px; margin-top: -10px; box-shadow: 0 4px 10px -4px rgba(0,0,0,0.1); }
       .dark-mode .card.recite-mode .q-content { border-bottom-color: #312e81; }
 
@@ -147,15 +149,19 @@
       .opt-row { display: flex; padding: 14px; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; background: var(--bg-card); transition: 0.1s; align-items: flex-start; }
       .opt-row:active { transform: scale(0.99); background: var(--bg-body); }
       
-      /* 背书模式样式优化 - 强力高亮版 */
-      .card.recite-mode .opts-container { pointer-events: none; gap: 14px; /* 增加阅读间距 */ } 
+      .card.recite-mode .opts-container { pointer-events: none; gap: 14px; } 
       .card.recite-mode .opt-row { border-color: var(--border-color); background: var(--bg-card); }
-      
       .card.recite-mode .opt-row.correct { background: #f0fdf4; border: 2px solid #22c55e; transform: scale(1.02); box-shadow: 0 8px 20px rgba(34, 197, 94, 0.15); margin: 5px 0; position: relative; z-index: 5; }
       .card.recite-mode .opt-row.correct .opt-icon { background: #22c55e; border-color: #22c55e; color: white; font-weight: 900; }
       .card.recite-mode .opt-row.correct .opt-text { font-weight: 700; color: #15803d; font-size: 1.05em; }
-      /* 给正确答案加个钩子，更直观 */
       .card.recite-mode .opt-row.correct .opt-text::before { content: "✅ "; }
+      
+      /* 干扰消除模式：淡化错误选项 */
+      .card.recite-mode.clean-mode .opt-row:not(.correct) { opacity: 0.2; transform: scale(0.95); filter: grayscale(100%); }
+      /* 极速模式：隐藏选项，点击显示 */
+      .card.speed-mode .opts-container { display: none; }
+      .card.speed-mode .speed-answer-area { display: block; padding: 20px; background: #f8fafc; border-radius: 8px; text-align: center; cursor: pointer; color: var(--text-sub); border: 2px dashed var(--border-color); }
+      .card.speed-mode .speed-answer-area.revealed { background: #f0fdf4; border-color: #22c55e; color: #15803d; font-weight: bold; }
       
       .dark-mode .card.recite-mode .opt-row.correct { background: rgba(34, 197, 94, 0.15); border-color: #22c55e; }
       .dark-mode .card.recite-mode .opt-row.correct .opt-text { color: #86efac; }
@@ -183,27 +189,34 @@
       .answer-section { margin-top: 20px; padding: 15px; background: var(--bg-body); border-radius: 8px; display: none; border: 1px solid var(--border-color); }
       .answer-section.show { display: block; animation: slideDown 0.3s; }
       
-      .action-bar { background: var(--bg-card); border-top: 1px solid var(--border-color); padding: 10px 15px; padding-bottom: max(10px, var(--safe-bottom)); display: flex; gap: 12px; align-items: center; position: fixed; bottom: 0; width: calc(100% - var(--sidebar-width)); z-index: 40; }
+      .action-bar { background: var(--bg-card); border-top: 1px solid var(--border-color); padding: 10px 15px; padding-bottom: max(10px, var(--safe-bottom)); display: flex; gap: 12px; align-items: center; position: fixed; bottom: 0; width: calc(100% - var(--sidebar-width)); z-index: 40; transition: width 0.3s; }
       .btn { flex: 1; padding: 12px; border: none; border-radius: 8px; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 5px; }
       .btn:active { transform: scale(0.98); }
       .btn-secondary { background: var(--bg-body); color: var(--text-main); border: 1px solid var(--border-color); }
       .btn-primary { background: var(--primary); color: white; flex: 2; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.2); }
       .btn-recite { background: var(--info); color: white; flex: 2; }
       .btn-kill { background: #10b981; color: white; flex: 1; font-size: 0.85rem; }
+      .btn-audio { background: var(--bg-body); color: var(--text-main); border: 1px solid var(--border-color); width: 45px; flex: none; font-size: 1.2rem; }
+      .btn-audio.active { background: var(--info); color: white; border-color: var(--info); animation: pulse-audio 1.5s infinite; }
+      @keyframes pulse-audio { 0% { box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(14, 165, 233, 0); } 100% { box-shadow: 0 0 0 0 rgba(14, 165, 233, 0); } }
 
-      /* Toast 通知 */
       .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: white; padding: 10px 20px; border-radius: 20px; font-size: 0.9rem; z-index: 200; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
       .toast.show { opacity: 1; }
 
-      /* Score Modal */
-      .modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--bg-card); padding: 25px; border-radius: 16px; width: 90%; max-width: 400px; z-index: 100; box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: none; text-align: center; border: 1px solid var(--border-color); color: var(--text-main); }
+      /* Modals */
+      .modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--bg-card); padding: 25px; border-radius: 16px; width: 90%; max-width: 400px; z-index: 100; box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: none; text-align: center; border: 1px solid var(--border-color); color: var(--text-main); max-height: 80vh; overflow-y: auto; }
       .modal h2 { margin-top: 0; color: var(--primary); }
-      .score-big { font-size: 3rem; font-weight: 800; color: var(--primary); margin: 10px 0; }
-      .score-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; font-size: 0.9rem; }
-      .wrong-list { max-height: 150px; overflow-y: auto; text-align: left; background: var(--bg-body); padding: 10px; border-radius: 8px; display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 15px; }
-      .wrong-tag { background: #fef2f2; color: var(--error); border: 1px solid #fca5a5; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; }
-      
       .overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); z-index: 45; display: none; }
+      
+      /* Stats Table */
+      .stats-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 10px; }
+      .stats-table th, .stats-table td { padding: 8px; border-bottom: 1px solid var(--border-color); text-align: left; }
+      .stats-table th { background: var(--bg-body); color: var(--text-sub); }
+      .stats-score { font-weight: bold; }
+      .score-high { color: var(--success); }
+      .score-mid { color: var(--warning); }
+      .score-low { color: var(--error); }
+
       #fileInput { display: none; }
 
       @media (max-width: 768px) {
@@ -223,18 +236,18 @@
       <div class="sidebar-header">
         <div class="app-brand">
             <span>⚡️ 马原决战版</span>
-            <span style="font-size:0.7rem; background:var(--warning); color:white; padding:2px 4px; border-radius:4px;">V31.0</span>
+            <span style="font-size:0.7rem; background:var(--error); color:white; padding:2px 4px; border-radius:4px;">考前4天</span>
         </div>
         <div class="search-box">
             <span class="search-icon">🔍</span>
             <input type="text" class="search-input" placeholder="搜索题目..." oninput="handleSearch(this.value)">
         </div>
         <div class="countdown-card" onclick="editExamDate()" title="点击修改日期">
-            <div style="font-size:0.75rem; opacity:0.9">距离期末考试还有</div>
+            <div style="font-size:0.75rem; opacity:0.9">⚠️ 距离考试仅剩</div>
             <div style="margin:2px 0">
                 <span class="countdown-num" id="daysLeft">--</span> 天
             </div>
-            <div style="font-size:0.7rem; opacity:0.8" id="examDateStr">加油！</div>
+            <div style="font-size:0.7rem; opacity:0.8" id="examDateStr">生死时速！</div>
         </div>
         <div class="func-grid">
             <button class="func-btn active" onclick="switchModule('main')" id="btn-main">📖 章节练习</button>
@@ -246,7 +259,7 @@
         </div>
         <div class="func-grid">
             <button class="func-btn btn-mock" onclick="startMockExam()" id="btn-mock">📝 模拟考</button>
-            <button class="func-btn" onclick="switchModule('random_drill')" id="btn-random">🔀 乱序刷</button>
+            <button class="func-btn" style="color:var(--info); border-color:var(--info)" onclick="showStatsModal()">📊 诊断报告</button>
         </div>
         <div style="padding: 5px 0; font-size: 0.8rem; color: var(--text-sub); display: flex; justify-content: space-between; align-items: center;">
             <span>🗡️ 已斩题数:</span>
@@ -271,14 +284,27 @@
     <!-- 成绩单 Modal -->
     <div class="modal" id="scoreModal">
         <h2>🎉 考试结束</h2>
-        <div class="score-big" id="modalScore">0</div>
-        <div class="score-grid">
+        <div style="font-size:3rem; font-weight:800; color:var(--primary); margin:10px 0" id="modalScore">0</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px">
             <div>✅ 正确: <span id="modalCorrect">0</span></div>
             <div>❌ 错误: <span id="modalWrong">0</span></div>
         </div>
-        <div style="text-align:left; font-size:0.85rem; margin-bottom:5px; color:var(--text-sub)">点击题号查看错题：</div>
-        <div class="wrong-list" id="modalWrongList"></div>
+        <div style="text-align:left; font-size:0.85rem; margin-bottom:5px; color:var(--text-sub)">错题索引：</div>
+        <div style="max-height:150px; overflow-y:auto; text-align:left; background:var(--bg-body); padding:10px; border-radius:8px; display:flex; flex-wrap:wrap; gap:5px; margin-bottom:15px;" id="modalWrongList"></div>
         <button class="btn btn-primary" onclick="closeModal()">关闭并复习</button>
+    </div>
+
+    <!-- 诊断报告 Modal -->
+    <div class="modal" id="statsModal" style="max-width:500px;">
+        <h2>📊 考前诊断报告</h2>
+        <p style="font-size:0.85rem; color:var(--text-sub)">红色代表正确率低于60%，请重点复习！</p>
+        <div style="max-height:400px; overflow-y:auto;">
+            <table class="stats-table">
+                <thead><tr><th>章节</th><th>进度</th><th>正确率</th></tr></thead>
+                <tbody id="statsTableBody"></tbody>
+            </table>
+        </div>
+        <button class="btn btn-secondary" onclick="closeModal()" style="margin-top:15px; width:100%">关闭</button>
     </div>
 
     <div class="main-content">
@@ -294,17 +320,20 @@
             <button class="jump-unfinished-btn" onclick="jumpToUnfinished()" title="继续做题/背诵" id="jumpBtn">⏭️ 继续</button>
           </div>
           <div style="display:flex; align-items:center; gap:8px">
-              <div id="reciteBadge" style="display:none; background:var(--info); color:white; font-size:0.75rem; padding:2px 6px; border-radius:4px;">背诵模式</div>
+              <div id="reciteBadge" style="display:none; background:var(--info); color:white; font-size:0.75rem; padding:2px 6px; border-radius:4px;">背诵</div>
+              <div id="audioBadge" style="display:none; background:var(--success); color:white; font-size:0.75rem; padding:2px 6px; border-radius:4px;">🔊 听题中</div>
               <select class="jump-box" id="qJumper" onchange="jumpTo(this.value)" disabled><option>0/0</option></select>
           </div>
         </div>
         <div class="filter-scroll" id="filterBar">
           <button class="filter-chip active" onclick="setFilter('all')">♾️ 全部</button>
-          <button class="filter-chip" onclick="setFilter('wrong')">❌ 只看错题</button>
-          <button class="filter-chip" onclick="setFilter('单选')">🔴 单选题</button>
-          <button class="filter-chip" onclick="setFilter('多选')">🔵 多选题</button>
-          <!-- 仅在背诵模式下显示 -->
-          <button class="filter-chip" id="killFilter" onclick="setFilter('kill')" style="display:none">🗡️ 已斩题</button>
+          <button class="filter-chip" onclick="setFilter('wrong')">❌ 错题</button>
+          <button class="filter-chip" onclick="setFilter('单选')">🔴 单选</button>
+          <button class="filter-chip" onclick="setFilter('多选')">🔵 多选</button>
+          <button class="filter-chip" id="killFilter" onclick="setFilter('kill')" style="display:none">🗡️ 已斩</button>
+          <!-- 新增过滤选项 -->
+          <button class="filter-chip" id="cleanModeBtn" onclick="toggleCleanMode()" style="display:none">🧹 极简</button>
+          <button class="filter-chip" id="speedModeBtn" onclick="toggleSpeedMode()" style="display:none">🚀 极速</button>
         </div>
         <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
       </div>
@@ -315,6 +344,7 @@
         </div>
       </div>
       <div class="action-bar" id="actionBar">
+        <button class="btn btn-audio" id="ttsBtn" onclick="toggleTTS()" title="听题模式">🎧</button>
         <button class="btn btn-secondary" onclick="move(-1)">⬅️ 上一题</button>
         <button class="btn btn-kill" id="killBtn" onclick="toggleKill()" style="display:none">🗡️ 斩题</button>
         <button class="btn btn-primary" id="mainBtn" onclick="handleMainAction()">✅ 提交答案</button>
@@ -341,13 +371,27 @@
       let userSel = new Set(); 
       let wrongSet = new Set();
       let favSet = new Set();
-      let killSet = new Set(); // 斩杀题集合
-      let reciteProgress = {}; // 背诵进度记录
+      let killSet = new Set(); 
+      let reciteProgress = {}; 
       let isReciteMode = false;
       let isExamMode = false;
       let examInterval = null;
       let examSeconds = 0;
       let currentFontSize = 1.15;
+      
+      // 新增状态变量
+      let isCleanMode = false; // 干扰消除模式
+      let isSpeedMode = false; // 极速刷题模式
+      let speedRevealed = false; // 极速模式下答案是否已显示
+      
+      // TTS 语音变量
+      let isTTSActive = false;
+      let ttsSynth = window.speechSynthesis;
+      let ttsUtterance = null;
+      let autoPlayNextTimer = null;
+
+      // 关键词高亮正则
+      const KEYWORDS = /根本|核心|本质|决定性|第一|基础|前提|源泉|动力|保证|关键|灵魂|标志/g;
 
       window.onload = async function() {
         initDarkMode();
@@ -356,12 +400,8 @@
         if (savedWrongs) wrongSet = new Set(JSON.parse(savedWrongs));
         const savedFavs = localStorage.getItem("favorites");
         if (savedFavs) favSet = new Set(JSON.parse(savedFavs));
-        
-        // 加载斩杀记录
         const savedKills = localStorage.getItem("kill_questions");
         if (savedKills) killSet = new Set(JSON.parse(savedKills));
-        
-        // 加载背诵进度
         const savedRecite = localStorage.getItem("recite_progress");
         if (savedRecite) reciteProgress = JSON.parse(savedRecite);
 
@@ -379,22 +419,22 @@
                 if(cached) {
                     modules.main.data = JSON.parse(cached);
                     switchModule('main');
-                } else {
-                    throw new Error("无数据");
-                }
+                } else { throw new Error("无数据"); }
             }
         } catch(e) {
-             document.getElementById("qContainer").innerHTML = `<div style="text-align:center; margin-top:50px;"><h3>⚠️ 题库加载失败</h3><p style="color:var(--text-sub)">请确认目录下存在 <code>提取结果_带答案.md</code></p></div>`;
+             document.getElementById("qContainer").innerHTML = `<div style="text-align:center; margin-top:50px;"><h3>⚠️ 题库加载失败</h3><p>请确认目录下存在 <code>提取结果_带答案.md</code></p></div>`;
         }
         updateCounts();
         document.addEventListener('keydown', (e) => {
             if(e.key === 'ArrowLeft') move(-1);
             if(e.key === 'ArrowRight') move(1);
-            if(e.key === 'Enter' && !isReciteMode) handleMainAction();
+            if(e.key === 'Enter') {
+                if (isSpeedMode && !speedRevealed) revealSpeedAnswer();
+                else if (!isReciteMode) handleMainAction();
+            }
         });
       };
 
-      // 修复：优化正则以支持跨行选项文本
       function parseMarkdown(text) {
         const lines = text.split(/\r?\n/);
         const questions = [];
@@ -410,12 +450,8 @@
                    if (!tempQ.answer) tempQ.answer = inlineAns[2].toUpperCase().trim();
                    tempQ.content = tempQ.content.replace(bracketRegex, "（ ）");
                }
-               
-               if (tempQ.answer && tempQ.answer.length > 1) {
-                   tempQ.type = "多选题";
-               } else if (!tempQ.type) {
-                   tempQ.type = currentType;
-               }
+               if (tempQ.answer && tempQ.answer.length > 1) tempQ.type = "多选题";
+               else if (!tempQ.type) tempQ.type = currentType;
                
                const str = tempQ.chapter + tempQ.content.substring(0, 15);
                let hash = 0;
@@ -428,9 +464,8 @@
         for (let line of lines) {
             line = line.trim();
             if (!line) continue;
-            
-            if (line.includes("单项选择") || line.includes("单选")) { currentType = "单选题"; }
-            if (line.includes("多项选择") || line.includes("多选") || line.includes("不定项")) { currentType = "多选题"; }
+            if (line.includes("单项选择") || line.includes("单选")) currentType = "单选题";
+            if (line.includes("多项选择") || line.includes("多选") || line.includes("不定项")) currentType = "多选题";
 
             if (line.match(/^##\s+/)) {
                 saveQuestion();
@@ -438,26 +473,14 @@
                 tempQ = null;
                 continue;
             }
-            
-            // 识别题目开始
             const qMatch = line.match(/^(\d+)[\.．、\s]\s*(.+)/);
             const isOptionStart = /^[A-Ea-e][\.．、\s]/.test(line);
             
             if (qMatch && !isOptionStart) {
                 saveQuestion();
-                tempQ = { 
-                    chapter: currentChapter, 
-                    type: currentType, 
-                    content: qMatch[2].trim(), 
-                    options: [], 
-                    answer: "", 
-                    userSel: new Set(), 
-                    isSubmitted: false 
-                };
+                tempQ = { chapter: currentChapter, type: currentType, content: qMatch[2].trim(), options: [], answer: "", userSel: new Set(), isSubmitted: false };
                 continue;
             }
-            
-            // 识别选项 - 重点修改处
             if ((isOptionStart || line.match(/^[A-Ea-e]\s+/)) && tempQ) {
                 const optRegex = /([A-Ea-e])[\.．、\s]\s*([\s\S]*?)(?=\s+[A-Ea-e][\.．、\s]|$)/g;
                 let match;
@@ -468,19 +491,13 @@
                 }
                 if (!found) {
                      const simpleMatch = line.match(/^([A-Ea-e])[\.．、\s]\s*([\s\S]+)/);
-                     if(simpleMatch) {
-                         tempQ.options.push({ label: simpleMatch[1].toUpperCase(), text: simpleMatch[2].trim() });
-                     } else if (tempQ.options.length > 0) {
-                         tempQ.options[tempQ.options.length-1].text += "\n" + line;
-                     }
+                     if(simpleMatch) tempQ.options.push({ label: simpleMatch[1].toUpperCase(), text: simpleMatch[2].trim() });
+                     else if (tempQ.options.length > 0) tempQ.options[tempQ.options.length-1].text += "\n" + line;
                 }
                 continue;
             }
-            
             const ansMatch = line.match(/【答案】\s*([A-Za-z\s,，]+)/);
-            if (ansMatch && tempQ) { 
-                tempQ.answer = ansMatch[1].toUpperCase().replace(/[^A-Z]/g, ''); 
-            }
+            if (ansMatch && tempQ) tempQ.answer = ansMatch[1].toUpperCase().replace(/[^A-Z]/g, ''); 
         }
         saveQuestion();
         return questions;
@@ -493,6 +510,7 @@
       }
 
       function renderQ() {
+        stopTTS(); // 切题停止朗读
         if (!filteredList.length) {
             document.getElementById("qContainer").innerHTML = `<div style="text-align:center;margin-top:50px;color:var(--text-sub)">无符合条件的题目</div>`;
             return;
@@ -503,32 +521,24 @@
         document.getElementById("headerTitle").innerText = isExamMode ? "模拟考试中..." : curChapter;
         document.getElementById("qJumper").value = curIndex;
         document.getElementById("reciteBadge").style.display = isReciteMode ? "block" : "none";
-        document.getElementById("killFilter").style.display = isReciteMode ? "flex" : "none";
         
-        // 进度条与标题逻辑
+        // 控制特殊功能按钮的显示
+        document.getElementById("killFilter").style.display = isReciteMode ? "flex" : "none";
+        document.getElementById("cleanModeBtn").style.display = isReciteMode ? "flex" : "none";
+        document.getElementById("speedModeBtn").style.display = isReciteMode ? "flex" : "none";
+        
         const progress = Math.round(((curIndex + 1) / filteredList.length) * 100);
         const pBar = document.getElementById('progressBar');
         pBar.style.width = `${progress}%`;
-        
-        const jumpBtn = document.getElementById("jumpBtn");
-        // 如果是背诵模式，显示“恢复进度”按钮
-        if (isReciteMode) {
-            pBar.classList.add('recite-bar');
-            jumpBtn.style.display = 'flex'; // 显示按钮
-            jumpBtn.innerText = "📍 恢复进度";
-            jumpBtn.title = "跳转到上次背诵的位置";
-            jumpBtn.classList.add('recite-jump');
-        } else {
-            pBar.classList.remove('recite-bar');
-            jumpBtn.style.display = 'flex';
-            jumpBtn.innerText = "⏭️ 继续";
-            jumpBtn.title = "跳转到第一道没做的题";
-            jumpBtn.classList.remove('recite-jump');
-        }
+        if(isReciteMode) pBar.classList.add('recite-bar'); else pBar.classList.remove('recite-bar');
 
         const container = document.getElementById("qContainer");
         let cardClass = "card";
-        if (isReciteMode) cardClass += " recite-mode";
+        if (isReciteMode) {
+            cardClass += " recite-mode";
+            if (isCleanMode) cardClass += " clean-mode";
+            if (isSpeedMode) cardClass += " speed-mode";
+        }
         else if (curMod === 'wrong_book') cardClass += " wrong-mode";
         else if (curMod === 'favorites') cardClass += " fav-mode";
         else if (isExamMode) cardClass += " mock-mode";
@@ -537,14 +547,13 @@
         const isKilled = killSet.has(q._uid);
         if (isKilled) cardClass += " mastered-card";
 
-        // 按钮逻辑
         const mBtn = document.getElementById("mainBtn");
         const kBtn = document.getElementById("killBtn");
         
         if (isReciteMode) {
             mBtn.innerText = "下一题 ➡️"; mBtn.className = "btn btn-recite"; mBtn.onclick = () => move(1);
             kBtn.style.display = "flex";
-            kBtn.innerText = isKilled ? "↩️ 恢复" : "🗡️ 斩题(已熟)";
+            kBtn.innerText = isKilled ? "↩️ 恢复" : "🗡️ 斩题";
             kBtn.style.background = isKilled ? "#64748b" : "#10b981";
         } else if (q.isSubmitted) {
             mBtn.innerText = curIndex < filteredList.length - 1 ? "下一题 ➡️" : "本章完成";
@@ -567,50 +576,28 @@
         const chapterHtml = `<span class="chapter-tag" title="${q.chapter}">${q.chapter}</span>`;
         const masteredHtml = isKilled ? `<div class="mastered-badge">已斩杀</div>` : '';
 
-        let optsHtml = "";
-        if (q.options && q.options.length > 0) {
-            const correctSet = new Set((q.answer || "").toUpperCase().split(""));
-            optsHtml = `<div class="opts-container">
-              ${q.options.map(opt => {
-                  let cls = `opt-row ${type === 'multi' ? 'multi-mode' : 'single-mode'}`;
-                  
-                  if (isReciteMode) {
-                      // 背书模式：仅高亮正确
-                      if (correctSet.has(opt.label)) cls += " correct";
-                  } 
-                  else if (isExamMode) {
-                      if (userSel.has(opt.label)) cls += " selected";
-                  }
-                  else if (q.isSubmitted) {
-                      if (correctSet.has(opt.label)) {
-                          cls += " correct";
-                          if (!userSel.has(opt.label)) cls += " missed";
-                      } else if (userSel.has(opt.label)) {
-                          cls += " wrong";
-                      }
-                  } 
-                  else {
-                      if (userSel.has(opt.label)) cls += " selected";
-                  }
+        // 高亮关键词
+        let contentHtml = q.content.replace(KEYWORDS, (match) => `<span class="highlight-keyword">${match}</span>`);
 
-                  return `
-                 <div class="${cls}" onclick="handleOpt('${opt.label}')">
-                   <div class="opt-icon">${opt.label}</div>
-                   <div class="opt-text">${opt.text}</div>
-                 </div>`;
-                }).join("")}
+        let optsHtml = "";
+        const correctSet = new Set((q.answer || "").toUpperCase().split(""));
+        
+        if (isReciteMode && isSpeedMode) {
+            // 极速模式：隐藏选项，只显示“点击查看答案”
+            speedRevealed = false;
+            optsHtml = `
+            <div class="opts-container" id="speedOpts" style="display:none;">
+                ${generateOptsHtml(q, type, correctSet)}
+            </div>
+            <div class="speed-answer-area" id="speedArea" onclick="revealSpeedAnswer()">
+                ⚡️ 点击显示答案
             </div>`;
         } else {
-            optsHtml = `<div style="padding:10px; color:var(--text-sub)">(暂无选项)</div>`;
+            optsHtml = `<div class="opts-container">${generateOptsHtml(q, type, correctSet)}</div>`;
         }
 
         const showAns = isReciteMode || (!isExamMode && q.isSubmitted);
-        
-        // 背书模式下的额外信息
-        let reciteInfo = "";
-        if(isReciteMode) {
-             reciteInfo = `<div style="margin-top:10px; font-size:0.8rem; color:var(--info); text-align:right;">当前背诵进度: ${curIndex + 1} / ${filteredList.length}</div>`;
-        }
+        let reciteInfo = isReciteMode ? `<div style="margin-top:10px; font-size:0.8rem; color:var(--info); text-align:right;">进度: ${curIndex + 1} / ${filteredList.length}</div>` : "";
 
         container.innerHTML = `
           <div class="${cardClass}">
@@ -623,7 +610,7 @@
                 </div>
                 <span style="font-size:0.8rem; color:var(--text-sub)">${curIndex + 1} / ${filteredList.length}</span>
              </div>
-             <div class="q-content">${q.content}</div>
+             <div class="q-content">${contentHtml}</div>
              ${optsHtml}
              <div class="answer-section ${showAns ? "show" : ""}" id="ansPanel">
                 <div style="margin-bottom:10px;">
@@ -634,10 +621,202 @@
              </div>
           </div>
         `;
+        
+        if(isTTSActive) { setTimeout(speakCurrentQuestion, 500); }
+      }
+      
+      // 生成选项 HTML 的辅助函数
+      function generateOptsHtml(q, type, correctSet) {
+          if (!q.options || q.options.length === 0) return `<div style="padding:10px; color:var(--text-sub)">(暂无选项)</div>`;
+          
+          return q.options.map(opt => {
+              let cls = `opt-row ${type === 'multi' ? 'multi-mode' : 'single-mode'}`;
+              if (isReciteMode) {
+                  if (correctSet.has(opt.label)) cls += " correct";
+              } else if (isExamMode) {
+                  if (userSel.has(opt.label)) cls += " selected";
+              } else if (q.isSubmitted) {
+                  if (correctSet.has(opt.label)) {
+                      cls += " correct";
+                      if (!userSel.has(opt.label)) cls += " missed";
+                  } else if (userSel.has(opt.label)) cls += " wrong";
+              } else {
+                  if (userSel.has(opt.label)) cls += " selected";
+              }
+              
+              let optTextHtml = opt.text.replace(KEYWORDS, (match) => `<span class="highlight-keyword">${match}</span>`);
+              return `
+             <div class="${cls}" onclick="handleOpt('${opt.label}')">
+               <div class="opt-icon">${opt.label}</div>
+               <div class="opt-text">${optTextHtml}</div>
+             </div>`;
+          }).join("");
       }
 
+      // === 新增功能逻辑 ===
+      
+      // 切换干扰消除模式
+      window.toggleCleanMode = function() {
+          isCleanMode = !isCleanMode;
+          const btn = document.getElementById("cleanModeBtn");
+          if(isCleanMode) {
+              btn.classList.add("active-clean");
+              if(isSpeedMode) toggleSpeedMode(); // 互斥
+              showToast("🧹 干扰消除开启：错误选项已淡化");
+          } else {
+              btn.classList.remove("active-clean");
+          }
+          renderQ();
+      };
+      
+      // 切换极速刷题模式
+      window.toggleSpeedMode = function() {
+          isSpeedMode = !isSpeedMode;
+          const btn = document.getElementById("speedModeBtn");
+          if(isSpeedMode) {
+              btn.classList.add("active-speed");
+              if(isCleanMode) toggleCleanMode(); // 互斥
+              showToast("🚀 极速模式开启：点击看答案");
+          } else {
+              btn.classList.remove("active-speed");
+          }
+          renderQ();
+      };
+      
+      // 极速模式显示答案
+      window.revealSpeedAnswer = function() {
+          const area = document.getElementById("speedArea");
+          const opts = document.getElementById("speedOpts");
+          const q = filteredList[curIndex];
+          
+          if(area && opts) {
+              area.innerHTML = `正确答案: ${q.answer}`;
+              area.classList.add("revealed");
+              opts.style.display = "flex"; // 显示选项以便核对
+              speedRevealed = true;
+          }
+      };
+
+      // === 核心新功能：TTS 听题模式 ===
+      window.toggleTTS = function() {
+          isTTSActive = !isTTSActive;
+          const btn = document.getElementById("ttsBtn");
+          const badge = document.getElementById("audioBadge");
+          if(isTTSActive) {
+              btn.classList.add("active");
+              badge.style.display = "block";
+              showToast("🔊 听题模式开启：读完自动下一题");
+              speakCurrentQuestion();
+          } else {
+              btn.classList.remove("active");
+              badge.style.display = "none";
+              stopTTS();
+              showToast("🔇 听题模式关闭");
+          }
+      };
+
+      function stopTTS() {
+          if(ttsSynth.speaking) ttsSynth.cancel();
+          clearTimeout(autoPlayNextTimer);
+      }
+
+      function speakCurrentQuestion() {
+          if(!isTTSActive) return;
+          stopTTS();
+          const q = filteredList[curIndex];
+          
+          // 构建朗读文本
+          let text = `第${curIndex+1}题。${q.content}。`;
+          // 如果是选择题，朗读选项
+          q.options.forEach(opt => {
+              text += `${opt.label}，${opt.text}。`;
+          });
+          
+          // 如果已提交或背诵模式，读答案
+          if(isReciteMode || q.isSubmitted) {
+              text += `正确答案是：${q.answer}。`;
+          }
+
+          ttsUtterance = new SpeechSynthesisUtterance(text);
+          ttsUtterance.rate = 1.2; // 语速稍快，适合复习
+          ttsUtterance.lang = 'zh-CN';
+          
+          ttsUtterance.onend = function() {
+              if(isTTSActive && curIndex < filteredList.length - 1) {
+                  // 读完自动下一题
+                  autoPlayNextTimer = setTimeout(() => move(1), 1500); 
+              }
+          };
+          
+          ttsSynth.speak(ttsUtterance);
+      }
+      // === 结束 TTS ===
+
+      // === 核心新功能：考前诊断报告 ===
+      window.showStatsModal = function() {
+          const statsMap = {}; // { chapName: {total, done, correct} }
+          
+          // 遍历所有章节数据
+          modules.main.data.forEach(q => {
+              if(!statsMap[q.chapter]) statsMap[q.chapter] = { total:0, done:0, correct:0 };
+              statsMap[q.chapter].total++;
+              
+              // 检查localStorage中的做题记录
+              // 注意：需要重新读取最新的 ma_章节 数据，因为 modules.main.data 不实时同步状态
+          });
+          
+          // 同步准确数据
+          for(let chap in statsMap) {
+              const saved = JSON.parse(localStorage.getItem("ma_" + chap) || "[]");
+              let doneCount = 0;
+              let correctCount = 0;
+              
+              const chapQs = modules.main.data.filter(q => q.chapter === chap);
+              
+              saved.forEach((record, idx) => {
+                  if(record && record.done && chapQs[idx]) {
+                      doneCount++;
+                      // 临时构建一个对象检查对错
+                      const tempQ = {answer: chapQs[idx].answer, userSel: new Set(record.sel)};
+                      if(checkStatus(tempQ) === 'correct') correctCount++;
+                  }
+              });
+              statsMap[chap].done = doneCount;
+              statsMap[chap].correct = correctCount;
+          }
+
+          const tbody = document.getElementById("statsTableBody");
+          tbody.innerHTML = "";
+          
+          for(let chap in statsMap) {
+              const d = statsMap[chap];
+              if(d.total === 0) continue;
+              
+              const progressRate = Math.round(d.done / d.total * 100);
+              let correctRate = d.done > 0 ? Math.round(d.correct / d.done * 100) : 0;
+              
+              let scoreClass = "stats-score";
+              if(d.done > 0) {
+                  if(correctRate < 60) scoreClass += " score-low";
+                  else if(correctRate < 85) scoreClass += " score-mid";
+                  else scoreClass += " score-high";
+              }
+
+              const row = `<tr>
+                  <td>${chap}</td>
+                  <td>${d.done}/${d.total} (${progressRate}%)</td>
+                  <td class="${scoreClass}">${d.done>0 ? correctRate+"%" : "-"}</td>
+              </tr>`;
+              tbody.innerHTML += row;
+          }
+          
+          document.getElementById("statsModal").style.display = "block";
+          document.getElementById("overlay").style.display = "block";
+      };
+      // === 结束 诊断报告 ===
+
       window.handleOpt = function (label) {
-        if (isReciteMode) return; // 背书模式禁止点击
+        if (isReciteMode) return; 
         const q = filteredList[curIndex];
         if (!isExamMode && q.isSubmitted) return;
 
@@ -672,19 +851,18 @@
         }
       };
       
-      // 斩题逻辑
       window.toggleKill = function() {
           const q = filteredList[curIndex];
           if(killSet.has(q._uid)) {
               killSet.delete(q._uid);
-              showToast("题目已恢复，下次会再次遇见");
+              showToast("题目已恢复");
           } else {
               killSet.add(q._uid);
-              showToast("🗡️ 斩杀成功！下次背诵将跳过此题");
+              showToast("🗡️ 斩杀成功！下次跳过");
           }
           localStorage.setItem("kill_questions", JSON.stringify(Array.from(killSet)));
           updateCounts();
-          renderQ(); // 刷新显示状态
+          renderQ(); 
       };
       
       function showToast(msg) {
@@ -717,7 +895,6 @@
       };
 
       window.jumpToUnfinished = function() {
-          // 修改逻辑：根据模式不同，跳转逻辑不同
           if (isReciteMode) {
                const lastIdx = reciteProgress[curChapter] || 0;
                if (curIndex === lastIdx) {
@@ -749,25 +926,23 @@
           
           if(isReciteMode) {
               btn.classList.add("active");
-              // 进入背书模式，尝试读取进度
               if(curMod === 'main' && reciteProgress[curChapter] !== undefined) {
-                  // 如果有进度且不是第一题，询问是否跳转
                   if(reciteProgress[curChapter] > 0 && reciteProgress[curChapter] < filteredList.length) {
-                      const rIndex = reciteProgress[curChapter];
-                      // 自动跳转，体验更流畅，给个提示即可
-                      curIndex = rIndex;
-                      showToast(`已定位到上次背诵位置: 第 ${rIndex+1} 题`);
+                      curIndex = reciteProgress[curChapter];
+                      showToast(`已定位到上次背诵位置`);
                   }
-              }
-              // 如果当前列表里有很多已斩题，提示用户可以过滤
-              const killedInList = filteredList.filter(q => killSet.has(q._uid)).length;
-              if(killedInList > 0 && filterType !== 'all') {
-                  // do nothing
-              } else if (killedInList > 0) {
-                  // 可以在这里提示过滤，目前暂不强制
               }
           } else {
               btn.classList.remove("active");
+              stopTTS(); // 退出背诵也停止语音
+              isTTSActive = false;
+              document.getElementById("ttsBtn").classList.remove("active");
+              document.getElementById("audioBadge").style.display = "none";
+              // 退出时也关闭子模式
+              isCleanMode = false;
+              isSpeedMode = false;
+              document.getElementById("cleanModeBtn").classList.remove("active-clean");
+              document.getElementById("speedModeBtn").classList.remove("active-speed");
           }
           renderQ();
           if(window.innerWidth <= 768) closeAll();
@@ -828,8 +1003,11 @@
           list.innerHTML = "";
           wrongIndices.forEach(idx => {
               const span = document.createElement('span');
-              span.className = 'wrong-tag';
-              span.innerText = idx + 1;
+              span.className = 'chapter-tag';
+              span.style.background = '#fef2f2';
+              span.style.color = 'var(--error)';
+              span.style.cursor = 'pointer';
+              span.innerText = (idx + 1) + (getQuestionType(rawList[idx])==='single'?' (单)':' (多)');
               span.onclick = () => { closeModal(); jumpTo(idx); };
               list.appendChild(span);
           });
@@ -841,6 +1019,7 @@
       
       window.closeModal = function() {
           document.getElementById('scoreModal').style.display = 'none';
+          document.getElementById('statsModal').style.display = 'none';
           document.getElementById('overlay').style.display = 'none';
       }
 
@@ -941,16 +1120,11 @@
           });
           setFilter('all');
           
-          // 新增逻辑：如果是背诵模式，自动跳转到背诵进度
-          // setFilter('all') 默认把 curIndex 设为了 0，这里我们要覆盖它
           if(isReciteMode && reciteProgress[name] !== undefined) {
              let savedIdx = reciteProgress[name];
-             // 防止越界
              if(savedIdx < 0) savedIdx = 0;
              if(savedIdx >= rawList.length) savedIdx = rawList.length - 1;
-             
              curIndex = savedIdx;
-             // 重新渲染以更新界面
              renderQ();
              showToast("已恢复背诵进度");
           }
@@ -982,12 +1156,7 @@
               else el.classList.add('active');
           }
 
-          if (type === 'all') {
-              // 在背书模式下的"全部"，可以选择是否过滤掉斩杀题。为了体验，默认不过滤，但可以通过“斩”状态看出
-              // 如果想极致体验，可以默认过滤掉斩杀题：
-              // filteredList = rawList.filter(q => !killSet.has(q._uid));
-              filteredList = rawList;
-          }
+          if (type === 'all') filteredList = rawList;
           else if (type === 'wrong') filteredList = rawList.filter(q => q.isSubmitted && checkStatus(q) !== 'correct');
           else if (type === '单选') filteredList = rawList.filter(q => getQuestionType(q) === 'single');
           else if (type === '多选') filteredList = rawList.filter(q => getQuestionType(q) === 'multi');
@@ -1023,28 +1192,27 @@
       }
 
       window.move = (dir) => {
-          // 如果是背诵模式，且下一个题目是“已斩杀”的，可以考虑自动跳过 (此处暂不强制跳过，防止误触后找不回)
-          // 可以在设置里加一个“自动跳过熟练题”的开关
           const next = curIndex + dir;
           if (next >= 0 && next < filteredList.length) { 
               curIndex = next; 
               renderQ(); 
-              
-              // 背诵模式：实时保存进度
               if(isReciteMode && curMod === 'main') {
                   reciteProgress[curChapter] = curIndex;
                   localStorage.setItem("recite_progress", JSON.stringify(reciteProgress));
               }
           } 
-          else { if(dir===1) showToast("本章已结束"); }
+          else { 
+              if(dir===1) showToast("本章已结束"); 
+              stopTTS(); // 翻到底了停止朗读
+          }
       };
       
       window.jumpTo = (v) => { curIndex = parseInt(v); renderQ(); };
       window.toggleSidebar = () => { document.getElementById("sidebar").classList.add("open"); document.getElementById("overlay").classList.add("active"); };
-      window.closeAll = () => { document.getElementById("sidebar").classList.remove("open"); document.getElementById("overlay").classList.remove("active"); document.getElementById("scoreModal").style.display='none'; };
+      window.closeAll = () => { document.getElementById("sidebar").classList.remove("open"); document.getElementById("overlay").classList.remove("active"); document.getElementById("scoreModal").style.display='none'; document.getElementById("statsModal").style.display='none'; };
       
       window.resetWrongBook = () => {
-          if(!confirm("⚠️ 确定要重置所有错题吗？\n\n这将会把这些题在章节练习中的状态也重置为【未做】，方便您重新练习。")) return;
+          if(!confirm("⚠️ 确定要重置所有错题吗？\n\n这将清空所有错题记录！")) return;
           const chapMap = new Map();
           modules.main.data.forEach(q => { if(!chapMap.has(q.chapter)) chapMap.set(q.chapter, []); chapMap.get(q.chapter).push(q); });
           for (const [chapName, questions] of chapMap) {
@@ -1065,7 +1233,7 @@
           }
           wrongSet.clear(); localStorage.removeItem("wrong_questions"); updateCounts();
           if(curMod==='wrong_book') switchModule('main'); else renderQ();
-          alert("错题已全部重置，请重新挑战！");
+          alert("错题已全部重置！");
       }
 
       window.resetCurrentChapter = function() {
@@ -1074,7 +1242,6 @@
           rawList.forEach(q => { q.isSubmitted = false; q.userSel = new Set(); });
           localStorage.removeItem("ma_" + curChapter);
           
-          // 同时重置背诵进度
           if(reciteProgress[curChapter]) {
               delete reciteProgress[curChapter];
               localStorage.setItem("recite_progress", JSON.stringify(reciteProgress));
@@ -1091,7 +1258,7 @@
       
       function initCountdown() {
           const target = localStorage.getItem("exam_date");
-          let date = target ? new Date(target) : new Date(new Date().setDate(new Date().getDate() + 5));
+          let date = target ? new Date(target) : new Date(new Date().setDate(new Date().getDate() + 4));
           const diff = Math.ceil((date - new Date()) / (1000 * 60 * 60 * 24));
           document.getElementById("daysLeft").innerText = diff > 0 ? diff : 0;
           document.getElementById("examDateStr").innerText = `目标: ${date.getMonth()+1}-${date.getDate()}`;
