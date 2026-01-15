@@ -6,7 +6,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
     />
-    <title>马原期末复习 - 决战版 V33.0 (极速刷题+干扰消除)</title>
+    <title>马原期末复习 - 决战版 V35.3 (彻底修复错题复活BUG)</title>
     <style>
       :root {
         --primary: #4f46e5;
@@ -15,15 +15,15 @@
         --warning: #f59e0b;
         --error: #ef4444;
         --info: #0ea5e9;
-        --text-main: #1e293b;
+        --text-main: #0f172a; 
         --text-sub: #64748b;
-        --bg-body: #f1f5f9;
+        --bg-body: #f8fafc;
         --bg-sidebar: #ffffff;
         --bg-card: #ffffff;
         --border-color: #e2e8f0;
         --sidebar-width: 280px;
         --safe-bottom: env(safe-area-inset-bottom, 20px);
-        --content-font-size: 1.15rem;
+        --content-font-size: 1.35rem; 
       }
 
       body.dark-mode {
@@ -42,7 +42,7 @@
       }
 
       * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-      body { margin: 0; padding: 0; font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background-color: var(--bg-body); color: var(--text-main); height: 100vh; display: flex; overflow: hidden; transition: background 0.3s, color 0.3s; }
+      body { margin: 0; padding: 0; font-family: "PingFang SC", "Microsoft YaHei", -apple-system, sans-serif; background-color: var(--bg-body); color: var(--text-main); height: 100vh; display: flex; overflow: hidden; transition: background 0.3s, color 0.3s; }
 
       /* === 侧边栏 === */
       .sidebar { width: var(--sidebar-width); background: var(--bg-sidebar); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; z-index: 50; transition: transform 0.3s; flex-shrink: 0; }
@@ -52,6 +52,13 @@
       .search-box { position: relative; width: 100%; }
       .search-input { width: 100%; padding: 8px 10px 8px 30px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-body); color: var(--text-main); font-size: 0.85rem; }
       .search-icon { position: absolute; left: 8px; top: 50%; transform: translateY(-50%); font-size: 0.9rem; opacity: 0.5; }
+
+      /* 学习统计模块 */
+      .study-stats-card { background: var(--bg-body); border-radius: 8px; padding: 10px; font-size: 0.8rem; display: flex; flex-direction: column; gap: 5px; border: 1px solid var(--border-color); }
+      .stats-row { display: flex; justify-content: space-between; color: var(--text-sub); }
+      .stats-val { font-weight: bold; color: var(--text-main); }
+      .daily-progress { height: 6px; background: var(--border-color); border-radius: 3px; overflow: hidden; margin-top: 2px; }
+      .daily-bar { height: 100%; background: var(--primary); width: 0%; transition: width 0.5s; }
 
       .countdown-card { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; padding: 10px; border-radius: 8px; text-align: center; cursor: pointer; box-shadow: 0 4px 6px rgba(239, 68, 68, 0.25); animation: pulse 2s infinite; }
       .countdown-num { font-size: 1.4rem; font-weight: 800; margin: 0 4px; text-decoration: underline; text-underline-offset: 3px; }
@@ -85,90 +92,82 @@
       .exam-bar { background: #1e293b; color: white; padding: 10px 15px; display: none; justify-content: space-between; align-items: center; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
       .exam-bar.active { display: flex; }
 
-      .top-nav { background: var(--bg-card); padding: 10px 15px; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); display: flex; flex-direction: column; gap: 10px; z-index: 20; border-bottom: 1px solid var(--border-color); }
+      .top-nav { background: var(--bg-card); padding: 12px 20px; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); display: flex; flex-direction: column; gap: 10px; z-index: 20; border-bottom: 1px solid var(--border-color); }
       .nav-row { display: flex; align-items: center; justify-content: space-between; }
       .menu-toggle { font-size: 1.4rem; background: none; border: none; color: var(--text-sub); cursor: pointer; display: none; margin-right: 10px; }
-      .nav-title { font-weight: 700; font-size: 1rem; color: var(--text-main); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; max-width: 150px; }
-      .jump-box { padding: 5px 8px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.85rem; color: var(--text-main); outline: none; background: var(--bg-body); max-width: 120px; }
+      .nav-title { font-weight: 700; font-size: 1.1rem; color: var(--text-main); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; max-width: 300px; }
+      .jump-box { padding: 6px 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.9rem; color: var(--text-main); outline: none; background: var(--bg-body); max-width: 140px; }
       
-      .jump-unfinished-btn { background: var(--success); color: white; border: none; padding: 5px 8px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; gap: 4px; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2); }
+      .jump-unfinished-btn { background: var(--success); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 4px; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2); }
       .jump-unfinished-btn:active { transform: scale(0.95); }
-      .jump-unfinished-btn.recite-jump { background: var(--info); box-shadow: 0 2px 4px rgba(14, 165, 233, 0.2); }
-
-      .filter-scroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
-      .filter-chip { padding: 4px 10px; border-radius: 20px; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-sub); font-size: 0.8rem; white-space: nowrap; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: 0.2s; }
+      
+      .filter-scroll { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; align-items: center; }
+      .filter-chip { padding: 6px 14px; border-radius: 20px; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-sub); font-size: 0.85rem; white-space: nowrap; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: 0.2s; font-weight: 500; }
       .filter-chip.active { background: var(--primary); color: white; border-color: var(--primary); }
       .filter-chip.active-wrong { background: var(--error); color: white; border-color: var(--error); }
       .filter-chip.active-recite { background: var(--info); color: white; border-color: var(--info); }
       .filter-chip.active-kill { background: #10b981; color: white; border-color: #10b981; }
-      
-      /* 新增功能按钮 */
       .filter-chip.active-speed { background: #8b5cf6; color: white; border-color: #8b5cf6; }
       .filter-chip.active-clean { background: #6366f1; color: white; border-color: #6366f1; }
+      
+      .auto-next-chip { border-style: solid; border-color: var(--warning); color: var(--warning); background: transparent; }
+      .auto-next-chip.active { background: var(--warning); color: white; }
 
       .progress-container { height: 4px; background: var(--border-color); width: 100%; border-radius: 2px; overflow: hidden; position: relative; }
       .progress-bar { height: 100%; background: var(--success); width: 0%; transition: width 0.3s ease; }
       .progress-bar.recite-bar { background: var(--info); }
 
-      .content-area { flex: 1; overflow-y: auto; padding: 20px; display: flex; justify-content: center; padding-bottom: 80px; }
+      .content-area { flex: 1; overflow-y: auto; padding: 20px; display: flex; justify-content: center; padding-bottom: 100px; }
       
-      /* Card 样式 */
-      .card { background: var(--bg-card); border-radius: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); padding: 20px; width: 100%; max-width: 800px; height: fit-content; margin-bottom: 20px; position: relative; border: 1px solid var(--border-color); transition: border-color 0.3s; }
+      .card { background: var(--bg-card); border-radius: 12px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04); padding: 30px; width: 98%; max-width: 1600px; height: fit-content; margin-bottom: 20px; position: relative; border: 1px solid var(--border-color); transition: border-color 0.3s; }
 
-      .card.recite-mode { border-left: 5px solid var(--info); overflow: visible; }
-      .card.wrong-mode { border-left: 5px solid var(--error); }
-      .card.fav-mode { border-left: 5px solid var(--warning); }
-      .card.mock-mode { border-left: 5px solid #8b5cf6; }
-      .card.search-mode { border-left: 5px solid #ec4899; }
-      .card.speed-mode { border-left: 5px solid #8b5cf6; } /* 极速模式样式 */
+      .card.recite-mode { border-left: 6px solid var(--info); overflow: visible; }
+      .card.wrong-mode { border-left: 6px solid var(--error); }
+      .card.fav-mode { border-left: 6px solid var(--warning); }
+      .card.mock-mode { border-left: 6px solid #8b5cf6; }
+      .card.search-mode { border-left: 6px solid #ec4899; }
+      .card.speed-mode { border-left: 6px solid #8b5cf6; } 
       
       .card.mastered-card { opacity: 0.7; border-style: dashed; }
-      .mastered-badge { position: absolute; top: 10px; right: 50px; background: #10b981; color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; transform: rotate(10deg); box-shadow: 0 2px 5px rgba(0,0,0,0.1); border: 2px solid white; z-index: 20; }
+      .mastered-badge { position: absolute; top: 15px; right: 60px; background: #10b981; color: white; font-size: 0.8rem; padding: 4px 8px; border-radius: 4px; transform: rotate(10deg); box-shadow: 0 2px 5px rgba(0,0,0,0.1); border: 2px solid white; z-index: 20; }
 
-      .q-header { display: flex; justify-content: space-between; margin-bottom: 15px; align-items: center; }
-      .q-type { font-size: 0.75rem; padding: 3px 8px; border-radius: 4px; font-weight: 700; background: var(--bg-body); color: var(--text-sub); border: 1px solid var(--border-color); }
+      .q-header { display: flex; justify-content: space-between; margin-bottom: 25px; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; flex-wrap: wrap; gap: 10px; }
+      .q-type { font-size: 0.85rem; padding: 4px 10px; border-radius: 6px; font-weight: 700; background: var(--bg-body); color: var(--text-sub); border: 1px solid var(--border-color); }
       .q-type.single { color: #0284c7; border-color: #0284c7; background: #e0f2fe; }
       .q-type.multi { color: #d97706; border-color: #d97706; background: #fef3c7; }
       .dark-mode .q-type.single { background: rgba(2, 132, 199, 0.2); }
       .dark-mode .q-type.multi { background: rgba(217, 119, 6, 0.2); }
       
-      .chapter-tag { font-size: 0.75rem; color: var(--text-sub); background: var(--bg-body); padding: 2px 8px; border-radius: 4px; margin-left: 8px; border: 1px solid var(--border-color); max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; vertical-align: middle; }
+      .chapter-tag { font-size: 0.85rem; color: var(--text-sub); background: var(--bg-body); padding: 4px 10px; border-radius: 6px; margin-left: 10px; border: 1px solid var(--border-color); max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; vertical-align: middle; }
+      
+      /* 新增：统计角标样式 */
+      .stats-badge { font-size: 0.75rem; color: var(--text-sub); background: var(--bg-body); padding: 4px 8px; border-radius: 6px; border: 1px solid var(--border-color); display: flex; gap: 6px; align-items: center; margin-left: auto; }
+      .stats-val-c { color: var(--success); font-weight: bold; }
+      .stats-val-w { color: var(--error); font-weight: bold; }
 
-      .star-icon { font-size: 1.4rem; color: var(--border-color); cursor: pointer; margin-left: 10px; transition: transform 0.2s; }
+      .star-icon { font-size: 1.6rem; color: var(--border-color); cursor: pointer; margin-left: 10px; transition: transform 0.2s; }
       .star-icon.active { color: #f59e0b; transform: scale(1.2); }
 
-      .q-content { font-size: var(--content-font-size); line-height: 1.6; color: var(--text-main); margin-bottom: 20px; white-space: pre-wrap; font-weight: 500; transition: font-size 0.2s; }
+      .q-content { font-size: var(--content-font-size); line-height: 1.8; color: var(--text-main); margin-bottom: 30px; white-space: pre-wrap; font-weight: 600; letter-spacing: 0.02em; }
       
-      /* 关键词高亮 */
-      .highlight-keyword { color: #ef4444; font-weight: 900; background: rgba(239, 68, 68, 0.1); padding: 0 2px; border-radius: 2px; }
+      .card.recite-mode .q-content { position: sticky; top: -20px; z-index: 10; background: var(--bg-card); padding: 20px 0; border-bottom: 4px solid var(--primary-light); margin-bottom: 30px; margin-top: -15px; box-shadow: 0 4px 12px -4px rgba(0,0,0,0.1); }
       
-      .card.recite-mode .q-content { position: sticky; top: -20px; z-index: 10; background: var(--bg-card); padding: 15px 0; border-bottom: 3px solid var(--primary-light); margin-bottom: 20px; margin-top: -10px; box-shadow: 0 4px 10px -4px rgba(0,0,0,0.1); }
-      .dark-mode .card.recite-mode .q-content { border-bottom-color: #312e81; }
-
-      .opts-container { display: flex; flex-direction: column; gap: 10px; }
-      .opt-row { display: flex; padding: 14px; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; background: var(--bg-card); transition: 0.1s; align-items: flex-start; }
-      .opt-row:active { transform: scale(0.99); background: var(--bg-body); }
+      .opts-container { display: flex; flex-direction: column; gap: 16px; }
+      .opt-row { display: flex; padding: 18px 20px; border: 2px solid var(--border-color); border-radius: 10px; cursor: pointer; background: var(--bg-card); transition: all 0.15s ease; align-items: flex-start; }
+      .opt-row:hover { border-color: var(--primary); background: var(--bg-body); transform: translateX(5px); }
+      .opt-row:active { transform: scale(0.995); }
       
-      .card.recite-mode .opts-container { pointer-events: none; gap: 14px; } 
+      .card.recite-mode .opts-container { pointer-events: none; gap: 18px; } 
       .card.recite-mode .opt-row { border-color: var(--border-color); background: var(--bg-card); }
-      .card.recite-mode .opt-row.correct { background: #f0fdf4; border: 2px solid #22c55e; transform: scale(1.02); box-shadow: 0 8px 20px rgba(34, 197, 94, 0.15); margin: 5px 0; position: relative; z-index: 5; }
+      .card.recite-mode .opt-row.correct { background: #f0fdf4; border-color: #22c55e; transform: scale(1.01); box-shadow: 0 4px 15px rgba(34, 197, 94, 0.1); }
       .card.recite-mode .opt-row.correct .opt-icon { background: #22c55e; border-color: #22c55e; color: white; font-weight: 900; }
-      .card.recite-mode .opt-row.correct .opt-text { font-weight: 700; color: #15803d; font-size: 1.05em; }
-      .card.recite-mode .opt-row.correct .opt-text::before { content: "✅ "; }
+      .card.recite-mode .opt-row.correct .opt-text { font-weight: 700; color: #15803d; }
       
-      /* 干扰消除模式：淡化错误选项 */
-      .card.recite-mode.clean-mode .opt-row:not(.correct) { opacity: 0.2; transform: scale(0.95); filter: grayscale(100%); }
-      /* 极速模式：隐藏选项，点击显示 */
-      .card.speed-mode .opts-container { display: none; }
-      .card.speed-mode .speed-answer-area { display: block; padding: 20px; background: #f8fafc; border-radius: 8px; text-align: center; cursor: pointer; color: var(--text-sub); border: 2px dashed var(--border-color); }
-      .card.speed-mode .speed-answer-area.revealed { background: #f0fdf4; border-color: #22c55e; color: #15803d; font-weight: bold; }
+      .card.recite-mode.clean-mode .opt-row:not(.correct) { opacity: 0.15; filter: grayscale(100%); }
       
-      .dark-mode .card.recite-mode .opt-row.correct { background: rgba(34, 197, 94, 0.15); border-color: #22c55e; }
-      .dark-mode .card.recite-mode .opt-row.correct .opt-text { color: #86efac; }
-
-      .opt-icon { width: 24px; height: 24px; margin-right: 10px; border: 1px solid var(--text-sub); display: flex; align-items: center; justify-content: center; color: var(--text-sub); flex-shrink: 0; font-size: 0.85rem; font-weight: bold; background: transparent; transition: all 0.2s; }
+      .opt-icon { width: 32px; height: 32px; margin-right: 15px; border: 2px solid var(--text-sub); display: flex; align-items: center; justify-content: center; color: var(--text-sub); flex-shrink: 0; font-size: 1rem; font-weight: bold; background: transparent; transition: all 0.2s; }
       .opt-row.single-mode .opt-icon { border-radius: 50%; }
-      .opt-row.multi-mode .opt-icon { border-radius: 4px; }
+      .opt-row.multi-mode .opt-icon { border-radius: 6px; }
 
       .opt-row.selected { border-color: var(--primary); background: var(--primary-light); }
       .opt-row.selected .opt-icon { background: var(--primary); border-color: var(--primary); color: white; }
@@ -184,31 +183,38 @@
       .opt-row.missed { border-color: var(--warning); border-style: dashed; }
       .opt-row.missed .opt-icon { background: var(--warning); border-color: var(--warning); color: white; }
 
-      .opt-text { flex: 1; font-size: calc(var(--content-font-size) - 0.1rem); line-height: 1.5; color: var(--text-main); }
+      .opt-text { flex: 1; font-size: calc(var(--content-font-size) - 0.05rem); line-height: 1.6; color: var(--text-main); font-weight: 500; }
 
-      .answer-section { margin-top: 20px; padding: 15px; background: var(--bg-body); border-radius: 8px; display: none; border: 1px solid var(--border-color); }
+      .answer-section { margin-top: 25px; padding: 20px; background: var(--bg-body); border-radius: 10px; display: none; border: 1px solid var(--border-color); }
       .answer-section.show { display: block; animation: slideDown 0.3s; }
       
-      .action-bar { background: var(--bg-card); border-top: 1px solid var(--border-color); padding: 10px 15px; padding-bottom: max(10px, var(--safe-bottom)); display: flex; gap: 12px; align-items: center; position: fixed; bottom: 0; width: calc(100% - var(--sidebar-width)); z-index: 40; transition: width 0.3s; }
-      .btn { flex: 1; padding: 12px; border: none; border-radius: 8px; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 5px; }
+      .note-section { margin-top: 15px; padding-top: 15px; border-top: 1px dashed var(--border-color); }
+      .note-label { font-size: 0.85rem; color: var(--text-sub); margin-bottom: 5px; display: flex; justify-content: space-between; }
+      .note-textarea { width: 100%; min-height: 60px; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main); font-family: inherit; resize: vertical; font-size: 0.95rem; }
+      .note-textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1); }
+
+      .action-bar { background: var(--bg-card); border-top: 1px solid var(--border-color); padding: 15px 20px; padding-bottom: max(15px, var(--safe-bottom)); display: flex; gap: 15px; align-items: center; position: fixed; bottom: 0; width: calc(100% - var(--sidebar-width)); z-index: 40; transition: width 0.3s; }
+      .btn { flex: 1; padding: 14px; border: none; border-radius: 10px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; }
       .btn:active { transform: scale(0.98); }
       .btn-secondary { background: var(--bg-body); color: var(--text-main); border: 1px solid var(--border-color); }
       .btn-primary { background: var(--primary); color: white; flex: 2; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.2); }
       .btn-recite { background: var(--info); color: white; flex: 2; }
-      .btn-kill { background: #10b981; color: white; flex: 1; font-size: 0.85rem; }
-      .btn-audio { background: var(--bg-body); color: var(--text-main); border: 1px solid var(--border-color); width: 45px; flex: none; font-size: 1.2rem; }
+      .btn-kill { background: #10b981; color: white; flex: 1; font-size: 0.9rem; }
+      /* 掌握按钮样式 */
+      .btn-master { background: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; margin-top: 10px; display: inline-flex; align-items: center; gap: 5px; box-shadow: 0 2px 5px rgba(16, 185, 129, 0.3); }
+      .btn-master:active { transform: scale(0.95); }
+
+      .btn-audio { background: var(--bg-body); color: var(--text-main); border: 1px solid var(--border-color); width: 50px; flex: none; font-size: 1.3rem; }
       .btn-audio.active { background: var(--info); color: white; border-color: var(--info); animation: pulse-audio 1.5s infinite; }
       @keyframes pulse-audio { 0% { box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(14, 165, 233, 0); } 100% { box-shadow: 0 0 0 0 rgba(14, 165, 233, 0); } }
 
       .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: white; padding: 10px 20px; border-radius: 20px; font-size: 0.9rem; z-index: 200; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
       .toast.show { opacity: 1; }
 
-      /* Modals */
       .modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--bg-card); padding: 25px; border-radius: 16px; width: 90%; max-width: 400px; z-index: 100; box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: none; text-align: center; border: 1px solid var(--border-color); color: var(--text-main); max-height: 80vh; overflow-y: auto; }
       .modal h2 { margin-top: 0; color: var(--primary); }
       .overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); z-index: 45; display: none; }
       
-      /* Stats Table */
       .stats-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 10px; }
       .stats-table th, .stats-table td { padding: 8px; border-bottom: 1px solid var(--border-color); text-align: left; }
       .stats-table th { background: var(--bg-body); color: var(--text-sub); }
@@ -216,6 +222,12 @@
       .score-high { color: var(--success); }
       .score-mid { color: var(--warning); }
       .score-low { color: var(--error); }
+      
+      .history-bar-container { display: flex; align-items: flex-end; height: 100px; gap: 8px; padding-top: 20px; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); }
+      .history-bar { flex: 1; background: var(--primary); border-radius: 4px 4px 0 0; position: relative; min-height: 2px; transition: height 0.5s; opacity: 0.7; }
+      .history-bar:hover { opacity: 1; }
+      .history-val { position: absolute; top: -20px; width: 100%; text-align: center; font-size: 0.7rem; color: var(--text-sub); }
+      .history-label { font-size: 0.7rem; color: var(--text-sub); text-align: center; overflow: hidden; white-space: nowrap; }
 
       #fileInput { display: none; }
 
@@ -226,6 +238,7 @@
         .overlay.active { display: block; }
         .action-bar { width: 100%; }
         .content-area { padding: 15px; padding-bottom: 80px; }
+        .card { padding: 20px; width: 100%; }
       }
       @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -238,6 +251,21 @@
             <span>⚡️ 马原决战版</span>
             <span style="font-size:0.7rem; background:var(--error); color:white; padding:2px 4px; border-radius:4px;">考前4天</span>
         </div>
+        
+        <div class="study-stats-card">
+            <div class="stats-row">
+                <span>⏱️ 本次复习</span>
+                <span class="stats-val" id="sessionTimer">00:00</span>
+            </div>
+            <div class="stats-row" style="margin-top:5px">
+                <span>🎯 今日目标</span>
+                <span class="stats-val" id="dailyGoalText">0/50</span>
+            </div>
+            <div class="daily-progress">
+                <div class="daily-bar" id="dailyGoalBar"></div>
+            </div>
+        </div>
+
         <div class="search-box">
             <span class="search-icon">🔍</span>
             <input type="text" class="search-input" placeholder="搜索题目..." oninput="handleSearch(this.value)">
@@ -254,7 +282,7 @@
             <button class="func-btn btn-recite" onclick="toggleReciteMode()" id="btn-recite">📗 背诵模式</button>
         </div>
         <div class="func-grid">
-            <button class="func-btn btn-wrong" onclick="switchModule('wrong_book')" id="btn-wrong">❌ 错题本 <span id="wrongCount"></span></button>
+            <button class="func-btn btn-wrong" onclick="switchModule('wrong_book')" id="btn-wrong">❌ 错题本 <span id="wrongCount">0</span></button>
             <button class="func-btn btn-fav" onclick="switchModule('favorites')" id="btn-fav">⭐ 收藏夹 <span id="favCount"></span></button>
         </div>
         <div class="func-grid">
@@ -289,6 +317,12 @@
             <div>✅ 正确: <span id="modalCorrect">0</span></div>
             <div>❌ 错误: <span id="modalWrong">0</span></div>
         </div>
+        
+        <div id="historyChartArea" style="display:none; margin-bottom:15px; padding:10px; background:#f8fafc; border-radius:8px;">
+            <div style="font-size:0.8rem; color:var(--text-sub); text-align:left; margin-bottom:5px;">📈 历史模考趋势</div>
+            <div class="history-bar-container" id="historyBars"></div>
+        </div>
+
         <div style="text-align:left; font-size:0.85rem; margin-bottom:5px; color:var(--text-sub)">错题索引：</div>
         <div style="max-height:150px; overflow-y:auto; text-align:left; background:var(--bg-body); padding:10px; border-radius:8px; display:flex; flex-wrap:wrap; gap:5px; margin-bottom:15px;" id="modalWrongList"></div>
         <button class="btn btn-primary" onclick="closeModal()">关闭并复习</button>
@@ -328,12 +362,17 @@
         <div class="filter-scroll" id="filterBar">
           <button class="filter-chip active" onclick="setFilter('all')">♾️ 全部</button>
           <button class="filter-chip" onclick="setFilter('wrong')">❌ 错题</button>
+          <button class="filter-chip auto-next-chip" id="autoNextBtn" onclick="toggleAutoNext()">⚡️ 连对自动跳</button>
+          
           <button class="filter-chip" onclick="setFilter('单选')">🔴 单选</button>
           <button class="filter-chip" onclick="setFilter('多选')">🔵 多选</button>
           <button class="filter-chip" id="killFilter" onclick="setFilter('kill')" style="display:none">🗡️ 已斩</button>
-          <!-- 新增过滤选项 -->
+          
           <button class="filter-chip" id="cleanModeBtn" onclick="toggleCleanMode()" style="display:none">🧹 极简</button>
           <button class="filter-chip" id="speedModeBtn" onclick="toggleSpeedMode()" style="display:none">🚀 极速</button>
+
+          <button class="filter-chip func-action" id="shuffleBtn" onclick="shuffleWrong()" style="display:none">🎲 乱序</button>
+          <button class="filter-chip func-action" id="exportBtn" onclick="exportWrong()" style="display:none">📋 导出</button>
         </div>
         <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
       </div>
@@ -369,7 +408,7 @@
       let curIndex = 0; 
       let filterType = "all";
       let userSel = new Set(); 
-      let wrongSet = new Set();
+      let wrongSet = new Set(); 
       let favSet = new Set();
       let killSet = new Set(); 
       let reciteProgress = {}; 
@@ -377,54 +416,67 @@
       let isExamMode = false;
       let examInterval = null;
       let examSeconds = 0;
-      let currentFontSize = 1.15;
+      let currentFontSize = 1.35; 
       
-      // 新增状态变量
-      let isCleanMode = false; // 干扰消除模式
-      let isSpeedMode = false; // 极速刷题模式
-      let speedRevealed = false; // 极速模式下答案是否已显示
+      let isCleanMode = false; 
+      let isSpeedMode = false; 
+      let speedRevealed = false; 
       
-      // TTS 语音变量
       let isTTSActive = false;
       let ttsSynth = window.speechSynthesis;
       let ttsUtterance = null;
       let autoPlayNextTimer = null;
 
-      // 关键词高亮正则
-      const KEYWORDS = /根本|核心|本质|决定性|第一|基础|前提|源泉|动力|保证|关键|灵魂|标志/g;
+      let sessionSeconds = 0;
+      let dailyGoal = 50;
+      let dailyCount = 0;
+      let isAutoNext = false; 
+
+      // 新增：题目统计数据缓存
+      let questionStats = JSON.parse(localStorage.getItem("question_stats") || "{}");
 
       window.onload = async function() {
         initDarkMode();
         initCountdown();
-        const savedWrongs = localStorage.getItem("wrong_questions");
-        if (savedWrongs) wrongSet = new Set(JSON.parse(savedWrongs));
+        initFontMemory(); 
+        startSessionTimer(); 
+        loadDailyGoal(); 
+
         const savedFavs = localStorage.getItem("favorites");
         if (savedFavs) favSet = new Set(JSON.parse(savedFavs));
         const savedKills = localStorage.getItem("kill_questions");
         if (savedKills) killSet = new Set(JSON.parse(savedKills));
         const savedRecite = localStorage.getItem("recite_progress");
         if (savedRecite) reciteProgress = JSON.parse(savedRecite);
+        
+        if(localStorage.getItem("auto_next") === "true") {
+            isAutoNext = true;
+            document.getElementById("autoNextBtn").classList.add("active");
+        }
 
         try {
             const response = await fetch('./提取结果_带答案.md');
             if(response.ok) {
                 const text = await response.text();
                 modules.main.data = parseMarkdown(text);
-                syncGlobalWrongStatus(); 
+                recalcGlobalStats(); 
                 switchModule('main');
                 const lastChap = localStorage.getItem("last_chapter");
                 if (lastChap) loadChapter(lastChap);
             } else {
-                const cached = localStorage.getItem("cached_questions");
-                if(cached) {
-                    modules.main.data = JSON.parse(cached);
-                    switchModule('main');
-                } else { throw new Error("无数据"); }
+                throw new Error("无数据");
             }
         } catch(e) {
-             document.getElementById("qContainer").innerHTML = `<div style="text-align:center; margin-top:50px;"><h3>⚠️ 题库加载失败</h3><p>请确认目录下存在 <code>提取结果_带答案.md</code></p></div>`;
+             const cached = localStorage.getItem("cached_questions");
+             if(cached) {
+                modules.main.data = JSON.parse(cached);
+                recalcGlobalStats();
+                switchModule('main');
+             } else {
+                document.getElementById("qContainer").innerHTML = `<div style="text-align:center; margin-top:50px;"><h3>⚠️ 题库加载失败</h3><p>请确认目录下存在 <code>提取结果_带答案.md</code></p></div>`;
+             }
         }
-        updateCounts();
+        
         document.addEventListener('keydown', (e) => {
             if(e.key === 'ArrowLeft') move(-1);
             if(e.key === 'ArrowRight') move(1);
@@ -435,12 +487,65 @@
         });
       };
 
+      // 统计功能函数
+      function updateQuestionStats(uid, isCorrect) {
+          if(!questionStats[uid]) questionStats[uid] = { correct: 0, wrong: 0 };
+          if(isCorrect) questionStats[uid].correct++;
+          else questionStats[uid].wrong++;
+          localStorage.setItem("question_stats", JSON.stringify(questionStats));
+      }
+
+      function getStatsHtml(uid) {
+          const s = questionStats[uid] || { correct: 0, wrong: 0 };
+          const total = s.correct + s.wrong;
+          return `
+            <div class="stats-badge" title="做对/做错/总次数">
+                <span class="stats-val-c">✓${s.correct}</span>
+                <span class="stats-val-w" style="margin-left:4px">✗${s.wrong}</span>
+                <span style="margin-left:4px;opacity:0.6">📦${total}</span>
+            </div>
+          `;
+      }
+
+      function recalcGlobalStats() {
+          wrongSet.clear();
+          let globalWrongCount = 0;
+          const chapMap = new Map();
+          modules.main.data.forEach(q => { 
+              if(!chapMap.has(q.chapter)) chapMap.set(q.chapter, []); 
+              chapMap.get(q.chapter).push(q); 
+          });
+
+          for (const [chapName, questions] of chapMap) {
+             const key = "ma_" + chapName;
+             const savedJson = localStorage.getItem(key);
+             if(!savedJson) continue;
+             try {
+                 const savedState = JSON.parse(savedJson);
+                 savedState.forEach((state, i) => {
+                     if (state && state.done && questions[i]) {
+                         const q = questions[i];
+                         const tempQ = { answer: q.answer, userSel: new Set(state.sel) };
+                         if(checkStatus(tempQ) !== 'correct') {
+                             wrongSet.add(q._uid);
+                             globalWrongCount++;
+                         }
+                     }
+                 });
+             } catch(e) {}
+          }
+          document.getElementById("wrongCount").innerText = globalWrongCount;
+          document.getElementById("favCount").innerText = favSet.size;
+          document.getElementById("killCount").innerText = killSet.size;
+      }
+
       function parseMarkdown(text) {
         const lines = text.split(/\r?\n/);
         const questions = [];
         let currentChapter = "默认章节";
         let currentType = "单选题"; 
         let tempQ = null;
+        let qIndexCounter = 0; // 核心修复：引入全局计数器，确保ID绝对唯一
         
         const saveQuestion = () => {
            if (tempQ) {
@@ -456,7 +561,8 @@
                const str = tempQ.chapter + tempQ.content.substring(0, 15);
                let hash = 0;
                for (let i = 0; i < str.length; i++) hash = (hash << 5) - hash + str.charCodeAt(i);
-               tempQ._uid = `q_${Math.abs(hash)}`;
+               // 核心修复：UID增加计数后缀，彻底解决重复题目ID冲突问题
+               tempQ._uid = `q_${Math.abs(hash)}_${qIndexCounter++}`;
                questions.push(tempQ);
            }
         };
@@ -510,22 +616,28 @@
       }
 
       function renderQ() {
-        stopTTS(); // 切题停止朗读
+        stopTTS(); 
         if (!filteredList.length) {
-            document.getElementById("qContainer").innerHTML = `<div style="text-align:center;margin-top:50px;color:var(--text-sub)">无符合条件的题目</div>`;
+            document.getElementById("qContainer").innerHTML = `<div style="text-align:center;margin-top:50px;color:var(--text-sub)">无符合条件的题目<br><span style="font-size:0.8rem">太棒了，全部消灭！</span></div>`;
             return;
         }
+        
+        if (curIndex >= filteredList.length) curIndex = filteredList.length - 1;
+        
         const q = filteredList[curIndex];
         userSel = new Set(q.userSel);
         
         document.getElementById("headerTitle").innerText = isExamMode ? "模拟考试中..." : curChapter;
         document.getElementById("qJumper").value = curIndex;
-        document.getElementById("reciteBadge").style.display = isReciteMode ? "block" : "none";
         
-        // 控制特殊功能按钮的显示
+        document.getElementById("reciteBadge").style.display = isReciteMode ? "block" : "none";
         document.getElementById("killFilter").style.display = isReciteMode ? "flex" : "none";
         document.getElementById("cleanModeBtn").style.display = isReciteMode ? "flex" : "none";
         document.getElementById("speedModeBtn").style.display = isReciteMode ? "flex" : "none";
+        
+        const isWrongMode = (curMod === 'wrong_book');
+        document.getElementById("shuffleBtn").style.display = isWrongMode ? "flex" : "none";
+        document.getElementById("exportBtn").style.display = isWrongMode ? "flex" : "none";
         
         const progress = Math.round(((curIndex + 1) / filteredList.length) * 100);
         const pBar = document.getElementById('progressBar');
@@ -575,15 +687,14 @@
         const starHtml = `<span class="star-icon ${isFav?'active':''}" onclick="toggleFav('${q._uid}')">⭐</span>`;
         const chapterHtml = `<span class="chapter-tag" title="${q.chapter}">${q.chapter}</span>`;
         const masteredHtml = isKilled ? `<div class="mastered-badge">已斩杀</div>` : '';
+        const statsHtml = getStatsHtml(q._uid); // 生成统计角标
 
-        // 高亮关键词
-        let contentHtml = q.content.replace(KEYWORDS, (match) => `<span class="highlight-keyword">${match}</span>`);
+        let contentHtml = q.content;
 
         let optsHtml = "";
         const correctSet = new Set((q.answer || "").toUpperCase().split(""));
         
         if (isReciteMode && isSpeedMode) {
-            // 极速模式：隐藏选项，只显示“点击查看答案”
             speedRevealed = false;
             optsHtml = `
             <div class="opts-container" id="speedOpts" style="display:none;">
@@ -598,6 +709,14 @@
 
         const showAns = isReciteMode || (!isExamMode && q.isSubmitted);
         let reciteInfo = isReciteMode ? `<div style="margin-top:10px; font-size:0.8rem; color:var(--info); text-align:right;">进度: ${curIndex + 1} / ${filteredList.length}</div>` : "";
+        
+        const myNote = localStorage.getItem(`note_${q._uid}`) || "";
+        
+        // 错题本专用：手动移除按钮
+        let masterBtnHtml = "";
+        if (curMod === 'wrong_book' && q.isSubmitted) {
+            masterBtnHtml = `<button class="btn-master" onclick="manualMaster('${q._uid}')">🎓 我学会了 (移除)</button>`;
+        }
 
         container.innerHTML = `
           <div class="${cardClass}">
@@ -608,16 +727,24 @@
                     ${chapterHtml}
                     ${starHtml}
                 </div>
-                <span style="font-size:0.8rem; color:var(--text-sub)">${curIndex + 1} / ${filteredList.length}</span>
+                ${statsHtml} <!-- 插入统计 -->
+             </div>
+             <div style="font-size:0.8rem; color:var(--text-sub); text-align:right; margin-bottom:15px; margin-top:-10px">
+                ${curIndex + 1} / ${filteredList.length}
              </div>
              <div class="q-content">${contentHtml}</div>
              ${optsHtml}
              <div class="answer-section ${showAns ? "show" : ""}" id="ansPanel">
                 <div style="margin-bottom:10px;">
                    <span style="font-weight:bold; color:var(--text-main)">参考答案：</span>
-                   <span style="color:var(--primary); font-weight:bold; font-size:1.2rem">${q.answer || "略"}</span>
+                   <span style="color:var(--primary); font-weight:bold; font-size:1.4rem">${q.answer || "略"}</span>
                 </div>
+                ${masterBtnHtml} <!-- 插入手动移除按钮 -->
                 ${reciteInfo}
+             </div>
+             <div class="note-section">
+                <div class="note-label"><span>📝 个人笔记</span><span style="font-size:0.75rem;opacity:0.6" id="saveStatus"></span></div>
+                <textarea class="note-textarea" placeholder="在此记录口诀、坑点或心得..." onblur="saveNote('${q._uid}', this.value)" oninput="document.getElementById('saveStatus').innerText='输入中...'">${myNote}</textarea>
              </div>
           </div>
         `;
@@ -625,10 +752,8 @@
         if(isTTSActive) { setTimeout(speakCurrentQuestion, 500); }
       }
       
-      // 生成选项 HTML 的辅助函数
       function generateOptsHtml(q, type, correctSet) {
           if (!q.options || q.options.length === 0) return `<div style="padding:10px; color:var(--text-sub)">(暂无选项)</div>`;
-          
           return q.options.map(opt => {
               let cls = `opt-row ${type === 'multi' ? 'multi-mode' : 'single-mode'}`;
               if (isReciteMode) {
@@ -643,8 +768,7 @@
               } else {
                   if (userSel.has(opt.label)) cls += " selected";
               }
-              
-              let optTextHtml = opt.text.replace(KEYWORDS, (match) => `<span class="highlight-keyword">${match}</span>`);
+              let optTextHtml = opt.text;
               return `
              <div class="${cls}" onclick="handleOpt('${opt.label}')">
                <div class="opt-icon">${opt.label}</div>
@@ -653,51 +777,272 @@
           }).join("");
       }
 
-      // === 新增功能逻辑 ===
+      window.saveNote = function(uid, content) {
+          localStorage.setItem(`note_${uid}`, content);
+          const status = document.getElementById('saveStatus');
+          if(status) {
+              status.innerText = "已保存";
+              status.style.color = "#10b981";
+              setTimeout(() => status.innerText = "", 1500);
+          }
+      };
+
+      window.toggleAutoNext = function() {
+          isAutoNext = !isAutoNext;
+          const btn = document.getElementById("autoNextBtn");
+          if(isAutoNext) {
+              btn.classList.add("active");
+              localStorage.setItem("auto_next", "true");
+              showToast("⚡️ 已开启：做对自动下一题");
+          } else {
+              btn.classList.remove("active");
+              localStorage.setItem("auto_next", "false");
+          }
+      };
+
+      window.handleMainAction = function () {
+        if(isExamMode) { move(1); return; }
+        
+        const q = filteredList[curIndex];
+        if (q.isSubmitted) { move(1); return; } 
+
+        q.isSubmitted = true;
+        incrementDailyGoal();
+        
+        const status = checkStatus(q);
+        const isCorrect = (status === 'correct');
+        
+        // 核心更新：更新统计数据
+        updateQuestionStats(q._uid, isCorrect);
+
+        // 核心逻辑修改：错题本模式下，做对了不移除，除非手动
+        if(curMod === 'wrong_book') {
+            // 如果做错了，同步给原章节“错误”状态，确保下次还在
+            if(!isCorrect) {
+                updateChapterStatus(q);
+            }
+            // 如果做对了，不更新原章节状态（保持原章节里的“错误”记录），从而不被 recalcGlobalStats 移除
+            // 界面上正常显示解析和“我学会了”按钮
+            renderQ();
+            updateJumperOption(curIndex, status);
+        } else {
+            // 正常模式，同步状态
+            updateChapterStatus(q);
+            recalcGlobalStats(); // 实时刷新侧边栏数字
+            
+            renderQ();
+            updateJumperOption(curIndex, status);
+            
+            if(isAutoNext && isCorrect) {
+                setTimeout(() => { if(filteredList[curIndex]._uid === q._uid) move(1); }, 800); 
+            }
+        }
+      };
+
+      // 新增：手动从错题本移除
+      window.manualMaster = function(uid) {
+          // 1. 找到该题
+          const q = filteredList.find(i => i._uid === uid);
+          if(!q) return;
+          
+          // 移除确认弹窗，直接执行
+          
+          // 2. 强制更新原章节状态为“正确”，这样 recalcGlobalStats 就会把它踢出错题集
+          // 确保解析出来的答案绝对正确
+          const correctArr = (q.answer || "").toUpperCase().split("").filter(c => /[A-Z]/.test(c));
+          q.userSel = new Set(correctArr); // 覆盖为正确选项
+          q.isSubmitted = true; // 确保是已提交状态
+          
+          updateChapterStatus(q);
+          
+          // 3. 刷新全局统计
+          recalcGlobalStats();
+          
+          // 4. 从当前视图移除
+          showToast("🎉 太棒了！已移除该错题");
+          filteredList.splice(curIndex, 1);
+          const rawIdx = rawList.findIndex(x => x._uid === uid);
+          if(rawIdx > -1) rawList.splice(rawIdx, 1);
+          
+          if(curIndex >= filteredList.length) curIndex = filteredList.length - 1;
+          
+          if(filteredList.length === 0) {
+             document.getElementById("qContainer").innerHTML = `<div style="text-align:center;margin-top:50px;">🎉 恭喜！错题本已清空</div>`;
+          } else {
+             renderQ();
+             initJumper();
+          }
+      };
       
-      // 切换干扰消除模式
+      function updateChapterStatus(q) {
+          const chapName = q.chapter;
+          const key = "ma_" + chapName;
+          let saved = JSON.parse(localStorage.getItem(key) || "[]");
+          
+          const chapQuestions = modules.main.data.filter(x => x.chapter === chapName);
+          // 核心修复：使用 indexOf 而非 findIndex(uid) 来避免ID冲突时更新了错误的题目
+          const indexInChap = chapQuestions.indexOf(q);
+          
+          if (indexInChap !== -1) {
+              while(saved.length <= indexInChap) saved.push(null);
+              saved[indexInChap] = { 
+                  sel: Array.from(q.userSel), 
+                  done: true 
+              };
+              localStorage.setItem(key, JSON.stringify(saved));
+          }
+      }
+
+      window.shuffleWrong = function() {
+          if(filteredList.length < 2) return showToast("题目太少，无需乱序");
+          filteredList.sort(() => Math.random() - 0.5);
+          curIndex = 0;
+          renderQ();
+          showToast("🎲 错题已打乱顺序");
+      };
+
+      window.exportWrong = function() {
+          if(filteredList.length === 0) return showToast("没有错题可导出");
+          let text = "📋 我的错题本导出\n\n";
+          filteredList.forEach((q, i) => {
+              text += `${i+1}. [${q.chapter}] ${q.content}\n`;
+              q.options.forEach(o => text += `   ${o.label}. ${o.text}\n`);
+              text += `   正确答案: ${q.answer}\n\n`;
+          });
+          
+          const textArea = document.createElement("textarea");
+          textArea.value = text;
+          document.body.appendChild(textArea);
+          textArea.select();
+          try {
+              document.execCommand('copy');
+              showToast("✅ 已复制到剪贴板，可直接粘贴打印");
+          } catch (err) {
+              showToast("❌ 复制失败");
+          }
+          document.body.removeChild(textArea);
+      };
+
+      function startSessionTimer() {
+          setInterval(() => {
+              sessionSeconds++;
+              const m = Math.floor(sessionSeconds / 60).toString().padStart(2, '0');
+              const s = (sessionSeconds % 60).toString().padStart(2, '0');
+              document.getElementById("sessionTimer").innerText = `${m}:${s}`;
+          }, 1000);
+      }
+
+      function loadDailyGoal() {
+          const today = new Date().toLocaleDateString();
+          const key = `daily_goal_${today}`;
+          dailyCount = parseInt(localStorage.getItem(key) || "0");
+          updateDailyUI();
+      }
+
+      function incrementDailyGoal() {
+          dailyCount++;
+          const today = new Date().toLocaleDateString();
+          localStorage.setItem(`daily_goal_${today}`, dailyCount);
+          updateDailyUI();
+      }
+
+      function updateDailyUI() {
+          const pct = Math.min((dailyCount / dailyGoal) * 100, 100);
+          document.getElementById("dailyGoalBar").style.width = `${pct}%`;
+          document.getElementById("dailyGoalText").innerText = `${dailyCount}/${dailyGoal}`;
+          if(dailyCount >= dailyGoal) {
+              document.getElementById("dailyGoalBar").style.background = "#10b981";
+          }
+      }
+
+      function initFontMemory() {
+          const savedSize = localStorage.getItem("font_size");
+          if(savedSize) {
+              currentFontSize = parseFloat(savedSize);
+              document.documentElement.style.setProperty('--content-font-size', currentFontSize + 'rem');
+          }
+      }
+
+      window.adjustFontSize = function(delta) {
+          currentFontSize += delta;
+          if(currentFontSize < 0.8) currentFontSize = 0.8;
+          if(currentFontSize > 2.5) currentFontSize = 2.5;
+          document.documentElement.style.setProperty('--content-font-size', currentFontSize + 'rem');
+          localStorage.setItem("font_size", currentFontSize); 
+      };
+      
+      function saveExamHistory(score, correct, total) {
+          const history = JSON.parse(localStorage.getItem("exam_history") || "[]");
+          const dateStr = new Date().toLocaleDateString(); 
+          history.push({ date: dateStr, score: score, correct: correct, total: total });
+          if(history.length > 7) history.shift(); 
+          localStorage.setItem("exam_history", JSON.stringify(history));
+          renderHistoryChart(history);
+      }
+
+      function renderHistoryChart(history) {
+          const container = document.getElementById("historyBars");
+          container.innerHTML = "";
+          if(history.length === 0) {
+              document.getElementById("historyChartArea").style.display = "none";
+              return;
+          }
+          document.getElementById("historyChartArea").style.display = "block";
+          
+          history.forEach(rec => {
+              const bar = document.createElement("div");
+              bar.className = "history-bar";
+              const pct = (rec.score / (rec.total * 2)) * 100; 
+              const height = Math.max(pct, 10) + "%"; 
+              bar.style.height = height;
+              bar.title = `${rec.date}: ${rec.score}分`;
+              
+              bar.innerHTML = `
+                <div class="history-val">${rec.score}</div>
+                <div style="position:absolute; bottom:-20px; width:100%; text-align:center; font-size:0.6rem; color:var(--text-sub)">${rec.date.split('/')[2]||'今天'}</div>
+              `;
+              container.appendChild(bar);
+          });
+      }
+
       window.toggleCleanMode = function() {
           isCleanMode = !isCleanMode;
           const btn = document.getElementById("cleanModeBtn");
           if(isCleanMode) {
               btn.classList.add("active-clean");
-              if(isSpeedMode) toggleSpeedMode(); // 互斥
-              showToast("🧹 干扰消除开启：错误选项已淡化");
+              if(isSpeedMode) toggleSpeedMode(); 
+              showToast("🧹 干扰消除开启");
           } else {
               btn.classList.remove("active-clean");
           }
           renderQ();
       };
       
-      // 切换极速刷题模式
       window.toggleSpeedMode = function() {
           isSpeedMode = !isSpeedMode;
           const btn = document.getElementById("speedModeBtn");
           if(isSpeedMode) {
               btn.classList.add("active-speed");
-              if(isCleanMode) toggleCleanMode(); // 互斥
-              showToast("🚀 极速模式开启：点击看答案");
+              if(isCleanMode) toggleCleanMode();
+              showToast("🚀 极速模式开启");
           } else {
               btn.classList.remove("active-speed");
           }
           renderQ();
       };
       
-      // 极速模式显示答案
       window.revealSpeedAnswer = function() {
           const area = document.getElementById("speedArea");
           const opts = document.getElementById("speedOpts");
           const q = filteredList[curIndex];
-          
           if(area && opts) {
               area.innerHTML = `正确答案: ${q.answer}`;
               area.classList.add("revealed");
-              opts.style.display = "flex"; // 显示选项以便核对
+              opts.style.display = "flex";
               speedRevealed = true;
           }
       };
 
-      // === 核心新功能：TTS 听题模式 ===
       window.toggleTTS = function() {
           isTTSActive = !isTTSActive;
           const btn = document.getElementById("ttsBtn");
@@ -705,7 +1050,7 @@
           if(isTTSActive) {
               btn.classList.add("active");
               badge.style.display = "block";
-              showToast("🔊 听题模式开启：读完自动下一题");
+              showToast("🔊 听题模式开启");
               speakCurrentQuestion();
           } else {
               btn.classList.remove("active");
@@ -724,59 +1069,37 @@
           if(!isTTSActive) return;
           stopTTS();
           const q = filteredList[curIndex];
-          
-          // 构建朗读文本
           let text = `第${curIndex+1}题。${q.content}。`;
-          // 如果是选择题，朗读选项
-          q.options.forEach(opt => {
-              text += `${opt.label}，${opt.text}。`;
-          });
-          
-          // 如果已提交或背诵模式，读答案
-          if(isReciteMode || q.isSubmitted) {
-              text += `正确答案是：${q.answer}。`;
-          }
+          q.options.forEach(opt => text += `${opt.label}，${opt.text}。`);
+          if(isReciteMode || q.isSubmitted) text += `正确答案是：${q.answer}。`;
 
           ttsUtterance = new SpeechSynthesisUtterance(text);
-          ttsUtterance.rate = 1.2; // 语速稍快，适合复习
+          ttsUtterance.rate = 1.2;
           ttsUtterance.lang = 'zh-CN';
-          
           ttsUtterance.onend = function() {
               if(isTTSActive && curIndex < filteredList.length - 1) {
-                  // 读完自动下一题
                   autoPlayNextTimer = setTimeout(() => move(1), 1500); 
               }
           };
-          
           ttsSynth.speak(ttsUtterance);
       }
-      // === 结束 TTS ===
 
-      // === 核心新功能：考前诊断报告 ===
       window.showStatsModal = function() {
-          const statsMap = {}; // { chapName: {total, done, correct} }
-          
-          // 遍历所有章节数据
+          const statsMap = {}; 
           modules.main.data.forEach(q => {
               if(!statsMap[q.chapter]) statsMap[q.chapter] = { total:0, done:0, correct:0 };
               statsMap[q.chapter].total++;
-              
-              // 检查localStorage中的做题记录
-              // 注意：需要重新读取最新的 ma_章节 数据，因为 modules.main.data 不实时同步状态
           });
           
-          // 同步准确数据
           for(let chap in statsMap) {
               const saved = JSON.parse(localStorage.getItem("ma_" + chap) || "[]");
               let doneCount = 0;
               let correctCount = 0;
-              
               const chapQs = modules.main.data.filter(q => q.chapter === chap);
               
               saved.forEach((record, idx) => {
                   if(record && record.done && chapQs[idx]) {
                       doneCount++;
-                      // 临时构建一个对象检查对错
                       const tempQ = {answer: chapQs[idx].answer, userSel: new Set(record.sel)};
                       if(checkStatus(tempQ) === 'correct') correctCount++;
                   }
@@ -787,39 +1110,27 @@
 
           const tbody = document.getElementById("statsTableBody");
           tbody.innerHTML = "";
-          
           for(let chap in statsMap) {
               const d = statsMap[chap];
               if(d.total === 0) continue;
-              
               const progressRate = Math.round(d.done / d.total * 100);
               let correctRate = d.done > 0 ? Math.round(d.correct / d.done * 100) : 0;
-              
               let scoreClass = "stats-score";
               if(d.done > 0) {
                   if(correctRate < 60) scoreClass += " score-low";
                   else if(correctRate < 85) scoreClass += " score-mid";
                   else scoreClass += " score-high";
               }
-
-              const row = `<tr>
-                  <td>${chap}</td>
-                  <td>${d.done}/${d.total} (${progressRate}%)</td>
-                  <td class="${scoreClass}">${d.done>0 ? correctRate+"%" : "-"}</td>
-              </tr>`;
-              tbody.innerHTML += row;
+              tbody.innerHTML += `<tr><td>${chap}</td><td>${d.done}/${d.total} (${progressRate}%)</td><td class="${scoreClass}">${d.done>0 ? correctRate+"%" : "-"}</td></tr>`;
           }
-          
           document.getElementById("statsModal").style.display = "block";
           document.getElementById("overlay").style.display = "block";
       };
-      // === 结束 诊断报告 ===
 
       window.handleOpt = function (label) {
         if (isReciteMode) return; 
         const q = filteredList[curIndex];
         if (!isExamMode && q.isSubmitted) return;
-
         const type = getQuestionType(q);
         if (type === 'multi') {
           if (userSel.has(label)) userSel.delete(label); else userSel.add(label);
@@ -828,27 +1139,6 @@
         }
         q.userSel = new Set(userSel);
         renderQ();
-      };
-
-      window.handleMainAction = function () {
-        if(isExamMode) { move(1); return; }
-        const q = filteredList[curIndex];
-        if (q.isSubmitted) {
-          move(1);
-        } else {
-          q.isSubmitted = true;
-          const status = checkStatus(q);
-          if (status !== 'correct') {
-              if (!wrongSet.has(q._uid)) {
-                  wrongSet.add(q._uid);
-                  localStorage.setItem("wrong_questions", JSON.stringify(Array.from(wrongSet)));
-                  updateCounts();
-              }
-          }
-          if(curMod === 'main') saveProgress();
-          renderQ();
-          updateJumperOption(curIndex, status);
-        }
       };
       
       window.toggleKill = function() {
@@ -861,7 +1151,7 @@
               showToast("🗡️ 斩杀成功！下次跳过");
           }
           localStorage.setItem("kill_questions", JSON.stringify(Array.from(killSet)));
-          updateCounts();
+          recalcGlobalStats();
           renderQ(); 
       };
       
@@ -897,23 +1187,12 @@
       window.jumpToUnfinished = function() {
           if (isReciteMode) {
                const lastIdx = reciteProgress[curChapter] || 0;
-               if (curIndex === lastIdx) {
-                   showToast("当前已在上次背诵位置");
-               } else {
-                   jumpTo(lastIdx);
-                   showToast(`已回到上次进度: 第 ${lastIdx + 1} 题`);
-               }
+               if (curIndex === lastIdx) showToast("当前已在上次背诵位置");
+               else { jumpTo(lastIdx); showToast(`已回到上次进度`); }
           } else {
               const idx = filteredList.findIndex(q => !q.isSubmitted);
               if(idx !== -1) { jumpTo(idx); } else { alert("本页题目已全部完成！"); }
           }
-      };
-
-      window.adjustFontSize = function(delta) {
-          currentFontSize += delta;
-          if(currentFontSize < 0.8) currentFontSize = 0.8;
-          if(currentFontSize > 2.0) currentFontSize = 2.0;
-          document.documentElement.style.setProperty('--content-font-size', currentFontSize + 'rem');
       };
 
       function initDarkMode() { if(localStorage.getItem("dark_mode") === "true") document.body.classList.add("dark-mode"); }
@@ -934,11 +1213,10 @@
               }
           } else {
               btn.classList.remove("active");
-              stopTTS(); // 退出背诵也停止语音
+              stopTTS(); 
               isTTSActive = false;
               document.getElementById("ttsBtn").classList.remove("active");
               document.getElementById("audioBadge").style.display = "none";
-              // 退出时也关闭子模式
               isCleanMode = false;
               isSpeedMode = false;
               document.getElementById("cleanModeBtn").classList.remove("active-clean");
@@ -951,7 +1229,7 @@
       window.toggleFav = function(uid) {
           if (favSet.has(uid)) favSet.delete(uid); else favSet.add(uid);
           localStorage.setItem("favorites", JSON.stringify(Array.from(favSet)));
-          updateCounts();
+          recalcGlobalStats();
           renderQ();
       };
 
@@ -995,6 +1273,8 @@
               }
           });
           
+          saveExamHistory(score, correct, rawList.length);
+
           document.getElementById('modalScore').innerText = score;
           document.getElementById('modalCorrect').innerText = correct;
           document.getElementById('modalWrong').innerText = wrong;
@@ -1023,30 +1303,6 @@
           document.getElementById('overlay').style.display = 'none';
       }
 
-      function syncGlobalWrongStatus() {
-          let hasUpdates = false;
-          const chapMap = new Map();
-          modules.main.data.forEach(q => { if(!chapMap.has(q.chapter)) chapMap.set(q.chapter, []); chapMap.get(q.chapter).push(q); });
-          for (const [chapName, questions] of chapMap) {
-             const key = "ma_" + chapName;
-             const savedJson = localStorage.getItem(key);
-             if(!savedJson) continue;
-             try {
-                 const savedState = JSON.parse(savedJson);
-                 savedState.forEach((state, i) => {
-                     if (state && state.done && questions[i]) {
-                         const q = questions[i];
-                         const tempQ = { ...q, userSel: new Set(state.sel) };
-                         if(checkStatus(tempQ) !== 'correct') {
-                             if(!wrongSet.has(q._uid)) { wrongSet.add(q._uid); hasUpdates = true; }
-                         }
-                     }
-                 });
-             } catch(e) {}
-          }
-          if(hasUpdates) { localStorage.setItem("wrong_questions", JSON.stringify(Array.from(wrongSet))); updateCounts(); }
-      }
-
       function checkStatus(q) {
           const correctArr = (q.answer || "").toUpperCase().split("").filter(c => /[A-Z]/.test(c));
           const correctSet = new Set(correctArr);
@@ -1067,11 +1323,17 @@
         if(key==='random_drill') document.getElementById('btn-random').classList.add('active');
 
         if (key === 'wrong_book') {
+            recalcGlobalStats(); 
             rawList = modules.main.data.filter(q => wrongSet.has(q._uid));
             curChapter = "错题本";
+            rawList.forEach(q => { 
+                q.userSel = new Set(); 
+                q.isSubmitted = false; 
+            });
         } else if (key === 'favorites') {
             rawList = modules.main.data.filter(q => favSet.has(q._uid));
             curChapter = "收藏夹";
+            rawList.forEach(q => { q.userSel = new Set(); q.isSubmitted = false; });
         } else if (key === 'random_drill') {
             rawList = [...modules.main.data].sort(() => Math.random() - 0.5).map(q => ({...q, userSel: new Set(), isSubmitted: false}));
             curChapter = "乱序刷题";
@@ -1133,12 +1395,6 @@
           if (window.innerWidth <= 768) closeAll();
       }
 
-      function saveProgress() {
-          if (curMod !== 'main') return;
-          const state = rawList.map(q => ({ sel: Array.from(q.userSel), done: q.isSubmitted }));
-          localStorage.setItem("ma_" + curChapter, JSON.stringify(state));
-      }
-
       function setFilter(type) {
           filterType = type;
           document.querySelectorAll('.filter-chip').forEach(c => { 
@@ -1146,6 +1402,8 @@
               c.classList.remove('active-wrong');
               c.classList.remove('active-recite');
               c.classList.remove('active-kill');
+              c.classList.remove('active-speed');
+              c.classList.remove('active-clean');
           });
           
           if(event) {
@@ -1153,7 +1411,7 @@
               if(type==='wrong') el.classList.add('active-wrong');
               else if(type==='kill') el.classList.add('active-kill');
               else if(isReciteMode && type !== 'kill') el.classList.add('active-recite');
-              else el.classList.add('active');
+              else if(type === 'all' || type === '单选' || type === '多选') el.classList.add('active');
           }
 
           if (type === 'all') filteredList = rawList;
@@ -1185,12 +1443,6 @@
           }
       }
 
-      function updateCounts() {
-          document.getElementById("wrongCount").innerText = wrongSet.size || "";
-          document.getElementById("favCount").innerText = favSet.size || "";
-          document.getElementById("killCount").innerText = killSet.size || "";
-      }
-
       window.move = (dir) => {
           const next = curIndex + dir;
           if (next >= 0 && next < filteredList.length) { 
@@ -1203,7 +1455,7 @@
           } 
           else { 
               if(dir===1) showToast("本章已结束"); 
-              stopTTS(); // 翻到底了停止朗读
+              stopTTS(); 
           }
       };
       
@@ -1212,9 +1464,10 @@
       window.closeAll = () => { document.getElementById("sidebar").classList.remove("open"); document.getElementById("overlay").classList.remove("active"); document.getElementById("scoreModal").style.display='none'; document.getElementById("statsModal").style.display='none'; };
       
       window.resetWrongBook = () => {
-          if(!confirm("⚠️ 确定要重置所有错题吗？\n\n这将清空所有错题记录！")) return;
+          if(!confirm("⚠️ 确定要重置所有错题吗？\n\n这将把所有已做错的题在原章节中标记为“未做”，清空所有进度。")) return;
           const chapMap = new Map();
           modules.main.data.forEach(q => { if(!chapMap.has(q.chapter)) chapMap.set(q.chapter, []); chapMap.get(q.chapter).push(q); });
+          
           for (const [chapName, questions] of chapMap) {
               const key = "ma_" + chapName;
               const savedJson = localStorage.getItem(key);
@@ -1223,15 +1476,14 @@
                   let changed = false;
                   questions.forEach((q, i) => {
                       if(wrongSet.has(q._uid) && savedState[i]) {
-                          savedState[i] = { sel: [], done: false };
+                          savedState[i] = { sel: [], done: false }; // 重置为未做
                           changed = true;
-                          if(curChapter === chapName) { rawList[i].isSubmitted = false; rawList[i].userSel = new Set(); }
                       }
                   });
                   if(changed) localStorage.setItem(key, JSON.stringify(savedState));
               }
           }
-          wrongSet.clear(); localStorage.removeItem("wrong_questions"); updateCounts();
+          recalcGlobalStats();
           if(curMod==='wrong_book') switchModule('main'); else renderQ();
           alert("错题已全部重置！");
       }
@@ -1246,7 +1498,8 @@
               delete reciteProgress[curChapter];
               localStorage.setItem("recite_progress", JSON.stringify(reciteProgress));
           }
-
+          
+          recalcGlobalStats();
           renderQ();
           initChapterList();
       }
